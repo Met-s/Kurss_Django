@@ -1,0 +1,3 @@
+Заходим в Shell
+    python manage.py shell
+
