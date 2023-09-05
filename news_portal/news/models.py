@@ -7,19 +7,21 @@ class Author(models.Model):
     author_user = models.OneToOneField(User, on_delete=models.CASCADE)
     author_rating = models.SmallIntegerField(default=0)
 
-    def update_rating(self, prat, crat):
+    def update_rating(self):
         post_rat = self.post_set.aggregate(postrating=Sum('post_rating'))
+        prat = 0
         prat += post_rat.get('postrating')
 
         comment_rat = self.author_user.comment_set.aggregate(
             commentrating=Sum('comment_rating'))
+        crat = 0
         crat += comment_rat.get('commentrating')
 
         self.author_rating = prat * 3 + crat
         self.save()
 
     def __str__(self):
-        return '{}'.format(self.author_user)
+        return f'{self.author_user.username}'
 
 
 class Category(models.Model):
@@ -53,7 +55,7 @@ class Post(models.Model):
         self.save()
 
     def preview(self):
-        return self.post_text[0:123] + '...'
+        return self.post_text[0:125] + '...'
 
 
 class PostCategory(models.Model):
