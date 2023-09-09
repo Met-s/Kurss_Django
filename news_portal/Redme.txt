@@ -189,9 +189,30 @@ news_portal/news/templates/news/post_detail.html
     целочисленный идентификатор объекта.
 3. Добавил новый шаблон в templates/news для представления.
 ---------------------------------------------------------
+Фильтр (truncatechars:21) в шаблоне: отрезает 20 символов и добавляет ...
+Добавил условие if, и цикл для вывода статей
 
+{% block content %}
+<h1>Все статьи</h1>
+<hr>
+{% if news %}
+    {% for post in news %}
+        {{ post.post_title }}
+
+        {{ post.post_text|truncatechars:21}}
+        <hr>
+    {% endfor %}
+{% else %}
+    <h1>Извините на данный момент статей нет</h1>
+{% endif %}
+{% endblock content %}
 ---------------------------------------
-
+Добавил сортировку в views.py свежая статья вверху
+class PostList(ListView):
+    model = Post
+    ordering = '-post_date'
+    template_name = 'news.html'
+    context_object_name = 'news'
 ---------------------------------------
 
 ---------------------------------------

@@ -47,7 +47,7 @@ class Post(models.Model):
     post_rating = models.SmallIntegerField(default=0)
 
     def __str__(self):
-        return (f'{self.post_date} : {self.post_category} : '
+        return (f'{self.post_date} : {self.category_type} : '
                 f'{self.post_title} : {self.post_text}')
 
     def like(self):

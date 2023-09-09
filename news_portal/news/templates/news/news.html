@@ -7,6 +7,19 @@ News
 {% block content %}
 <h1>Все статьи</h1>
 <hr>
-{{ news }}
+{% if news %}
+    {% for post in news %}
+        {{ post.post_title }}
+
+        {{ post.post_text|truncatechars:21}}
+        <hr>
+    {% endfor %}
+{% else %}
+    <h1>Извините на данный момент статей нет</h1>
+{% endif %}
+
+
+
+
 {% endblock content %}
 
