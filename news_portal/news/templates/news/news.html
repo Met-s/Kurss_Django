@@ -10,16 +10,14 @@ News
 {% if news %}
     {% for post in news %}
         {{ post.post_title }}
-
+        <br>
+        {{ post.post_date|date:'d M Y'}}
+        <br>
         {{ post.post_text|truncatechars:21}}
         <hr>
     {% endfor %}
 {% else %}
     <h1>Извините на данный момент статей нет</h1>
 {% endif %}
-
-
-
-
 {% endblock content %}
 

@@ -214,7 +214,58 @@ class PostList(ListView):
     template_name = 'news.html'
     context_object_name = 'news'
 ---------------------------------------
+Изменил показ формат даты и статьи
 
+views.py
+class PostList(ListView):
+    model = Post
+    ordering = '-post_date'
+    template_name = 'news.html'
+    context_object_name = 'news'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class PostDetail(DetailView):
+    model = Post
+    template_name = 'post_detail.html'
+    context_object_name = 'post_detail'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+---------------
+post_detail.html
+{% block content %}
+<h1>Одна статья</h1>
+<hr>
+{{ post_detail.post_date|date:'d M Y' }}
+<br>
+{{ post_detail.post_title }}
+<br>
+{{ post_detail.post_text }}
+<hr>
+{% endblock content %}
+----------------
+news.html
+{% block content %}
+<h1>Все статьи</h1>
+<hr>
+{% if news %}
+    {% for post in news %}
+        {{ post.post_title }}
+        <br>
+        {{ post.post_date|date:'d M Y'}}
+        <br>
+        {{ post.post_text|truncatechars:21}}
+        <hr>
+    {% endfor %}
+{% else %}
+    <h1>Извините на данный момент статей нет</h1>
+{% endif %}
+{% endblock content %}
 ---------------------------------------
 
 ---------------------------------------
