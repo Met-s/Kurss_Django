@@ -7,10 +7,10 @@ Post
 {% block content %}
 <h1>Одна статья</h1>
 <hr>
-{{ post_detail.post_date|date:'d M Y' }}
-<br>
 {{ post_detail.post_title }}
 <br>
 {{ post_detail.post_text }}
+<br>
+{{ post_detail.post_date|date:'d M Y' }}
 <hr>
 {% endblock content %}
