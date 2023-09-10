@@ -6,14 +6,15 @@ News
 
 {% block content %}
 <h1>Все статьи</h1>
+{{ news }}
 <hr>
-{% if news %}
+{% if news|length %}
     {% for post in news %}
         {{ post.post_title }}
         <br>
         {{ post.post_date|date:'d M Y'}}
         <br>
-        {{ post.post_text|truncatechars:21}}
+        {{ post.post_text|truncatewords:21}}
         <hr>
     {% endfor %}
 {% else %}
