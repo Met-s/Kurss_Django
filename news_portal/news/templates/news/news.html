@@ -6,7 +6,7 @@ News
 
 {% block content %}
 <h1>Все статьи</h1>
-{{ news }}
+{{ news|length }}
 <hr>
 {% if news|length %}
     {% for post in news %}
