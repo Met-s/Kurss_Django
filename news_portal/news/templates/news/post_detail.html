@@ -1,4 +1,5 @@
 {% extends 'flatpages/default.html' %}
+{% load censor_filters %}
 
 {% block title %}
 Post
@@ -9,7 +10,7 @@ Post
 <hr>
 {{ post_detail.post_title }}
 <br>
-{{ post_detail.post_text }}
+{{ post_detail.post_text|censor }}
 <br>
 {{ post_detail.post_date|date:'d M Y' }}
 <hr>

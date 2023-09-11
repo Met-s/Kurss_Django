@@ -15,7 +15,7 @@ News
         <br>
         {{ post.post_date|date:'d M Y'}}
         <br>
-        {{ post.post_text|truncatewords:21|censor}}
+        {{ post.post_text|truncatechars:21}}
         <hr>
     {% endfor %}
 {% else %}
