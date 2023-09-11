@@ -1,4 +1,5 @@
 {% extends 'flatpages/default.html' %}
+{% load censor_filters %}
 
 {% block title %}
 News
@@ -14,7 +15,7 @@ News
         <br>
         {{ post.post_date|date:'d M Y'}}
         <br>
-        {{ post.post_text|truncatewords:21}}
+        {{ post.post_text|truncatewords:21|censor}}
         <hr>
     {% endfor %}
 {% else %}
