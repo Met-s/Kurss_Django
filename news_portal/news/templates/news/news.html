@@ -13,6 +13,7 @@ News
     {% for post in news %}
         {{ post.post_title }}
         <br>
+        {{ post.category_type }}
         {{ post.post_date|date:'d M Y'}}
         <br>
         {{ post.post_text|truncatechars:21}}

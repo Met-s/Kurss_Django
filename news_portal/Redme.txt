@@ -311,52 +311,145 @@ def currency(value):
 {% load censor_filters %}
 Где custom_filters - это название файла с нашим фильтром.
 ---------------------------------------
+ПАГИНАЦИЯ
 
----------------------------------------
+news/views.py
 
----------------------------------------
+lass PostList(ListView):
+    model = Post
+    ordering = '-post_date'
+    template_name = 'news.html'
+    context_object_name = 'news'
+ Добавил
+    paginate_by = 10
+--------------
+templates/news/news.html
 
----------------------------------------
+Добавил ссылки на следующие и предыдущие страницы
 
----------------------------------------
-
----------------------------------------
-
----------------------------------------
-
----------------------------------------
-
-
----------------------------------------
-class Meta:
-    verbose_name = 'Товар'
-    verbose_name_plural = 'Товары'
-    ordering = ['-price']
----------------------------------------
-{{ name }} - обращение к переменной
-{% for i in name %} - циклы условия и т.д.
----------------------------------------
-views.py
-from django.shortcuts import render
-from djangoprj.models import Good
-
-def index(request):
-    goods = Good.objects.all()
-    return render(request, 'index.html', context={'goods': goods, 'name': 'kia rio 3'})# ----------------------------
-
----------------------------------------
-{% csrf_token %}
-Перед формой или в начале страницы для идентификации
-пользователя. Без этого не будут работать формы регистрации авторизации оплаты
-
----------------------------------------
-{% if user.is_authenticated %}
-
-Здесь будет выведена информация
-только для авторизованных пользователей
-
+{% else %}
+    <h1>Извините на данный момент статей нет</h1>
 {% endif %}
+{% if page_obj.has_previous %}
+    <a href="?page=1">1</a>
+    {% if page_obj.previous_page_number != 1 %}
+    ...
+    <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number}}</a>
+    {% endif %}
+{% endif %}
+{{ page_obj.number }}
+{% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+    {% if paginator.num_pages != page_obj.next_page_number %}
+    ...
+    <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+    {% endif %}
+{% endif %}
+{% endblock content %}
 ---------------------------------------
+Создание новости
+Создал форму
+
+news/forms.py
+
+from django import forms
+from .models import Post
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = [
+            'post_author',
+            'post_category',
+            'post_title',
+            'post_text'
+        ]
+------------
+Создал шаблон
+
+templates/news/news_create/html
+
+{% extends 'flatpages/default.html' %}
+{% block content %}
+<h1>Создание новости</h1>
+<hr>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save" />
+</form>
+{% endblock content %}
+--------------
+Добавил представление
+
+news/views.py
+
+from django.views.generic import (
+    ListView, DetailView, CreateView)
+
+class NewsCreate(CreateView):
+    form_class = PostForm
+    model = Post
+    template_name = 'news_create.html'
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.category_type = 'NW'
+        return super().form_valid(form)
+-------------
+Добавил url
+news/urls.py
+
+from .views import (PostList, PostDetail, NewsCreate)
+path('news/create/', NewsCreate.as_view(), name='news_create'),
+---------------------------------------
+Создание Статьи
+Форма та же что и для новости
+---------
+Создал шаблон
+
+templates/news/article_create/html
+
+{% extends 'flatpages/default.html' %}
+{% block content %}
+<h1>Создание статьи</h1>
+<hr>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save" />
+</form>
+{% endblock content %}
+-----------
+Добавил представление
+
+news/views.py
+
+class ArticleCreate(CreateView):
+    form_class = PostForm
+    model = Post
+    template_name = 'article_create.html'
+
+    def form_valid(self, form):
+        post = form.save(commit=True)
+        post.category_type = 'AR'
+        return super().form_valid(form)
+------------
+Добавил url
+news/urls.py
+
+from .views import (PostList, PostDetail, NewsCreate, ArticleCreate)
+
+path('articles/create/', ArticleCreate.as_view(), name='article_create')
+---------------------------------------
+
+---------------------------------------
+
+---------------------------------------
+
+---------------------------------------
+
+---------------------------------------
+
 
 ---------------------------------------
 
@@ -381,9 +474,7 @@ def index(request):
 ---------------------------------------
 
 ---------------------------------------
+
 ---------------------------------------
-Сделаем так, чтобы для работы с товарами была отдельная ссылка. Например,
-просмотр всех товаров был доступен по ссылке: products/,
-создание товара: product/create
 
-
+---------------------------------------
