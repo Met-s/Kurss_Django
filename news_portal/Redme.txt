@@ -401,6 +401,54 @@ news/urls.py
 
 from .views import (PostList, PostDetail, NewsCreate)
 path('news/create/', NewsCreate.as_view(), name='news_create'),
+-------------
+Всё работает но есть нюанс.
+Мы увидим форму но после её отправки, получим ошибку
+"ImproperlyConfigured at /products/create/
+No URL to redirect to.  Either provide a url or define a get_absolute_url method on the Model."
+
+Проблема в том, что Django не знает, какую страницу нужно открыть после создания
+товара. И как видно по описанию, можем убрать проблему, добавив метод
+get_absolute_url в модель. model Post
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
+
+---------------
+Используем спец- функцию reverse, которая позволяет указывать не путь
+вида /news/..., а название пути. Если вернуться к описанию путей в urls.py,
+то увидим что мы добавили значения для аргументов name. Такой механизм обращения
+удобен тем, что если мы захотим изменить пути, прийдётся вносить меньше
+изменений в код, а значит, меньше вероятность пропустить какое-то место и
+получить баг.
+
+news/urls.py
+
+rom django.urls import path
+from django.views.generic import (
+    ListView, DetailView, CreateView)
+urlpatterns = [
+    # path - означает ПУТЬ
+    # В данном случае путь ко всем товарам останется пустым
+    # Т.к. объявленное представление является классом, а Django ожидает
+    # функцию, надо представить этот класс в виде view.
+    # Для этого вызываем метод as_view.
+
+    path('', PostList.as_view()),
+
+    # pk - это первичный ключ товара, который будет выводиться у нас в шаблон
+    # int - указывает на то, что принимаются только целочисленные значения
+
+    path('<int:pk>', PostDetail.as_view(), name='post_detail'),
+    path('news/create/', NewsCreate.as_view(), name='news_create'),
+    path('articles/create/', ArticleCreate.as_view(), name='article_create')
+]
+Здесь выводится название в таком же виде, как описано в методе __str__
+в модели Post.
+GET и POST - запросы работают по-разному. Главное отличие заключается в способе
+передачи данных.
+Для передачи информации в GET-запросах используется query string,
+а в POST- тело запроса.
 ---------------------------------------
 Создание Статьи
 Форма та же что и для новости
