@@ -52,7 +52,7 @@ class Post(models.Model):
 
     def __str__(self):
         return (f'{self.post_date} : {self.category_type} : '
-                f'{self.post_title} : {self.post_text}')
+                f'{self.post_title} : {self.post_text} : {self.post_category}')
 
     def like(self):
         self.post_rating += 1

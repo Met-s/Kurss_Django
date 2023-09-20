@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from datetime import datetime
 from django.views.generic import (
-    ListView, DetailView, CreateView, UpdateView)
+    ListView, DetailView, CreateView, UpdateView, DeleteView, )
 from .models import Post
 from .forms import PostForm
 from django.http import HttpResponse
+from django.urls import reverse_lazy
+from pprint import pprint
 
 
 class PostList(ListView):
@@ -83,3 +85,10 @@ class ArticleUpdate(UpdateView):
                     f"Для редактирования Новостей перейдите по адресу "
                     f"/news/int:pk/edit </h1></body></html>")
             return HttpResponse(html)
+
+
+class NewsDelete(DeleteView):
+    model = Post
+    template_name = 'post_delete.html'
+    success_url = reverse_lazy('news')
+
