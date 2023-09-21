@@ -538,9 +538,182 @@ Post
 <hr>
 {% endblock content %}
 ---------------------------------------
+Добавил Фильтр
+new/filters.py
+from django_filters import FilterSet
+from .models import Post, PostCategory
 
+
+class PostFilter(FilterSet):
+    class Meta:
+        model = Post
+        fields = {
+            'post_title': ['icontains'],
+            'postcategory__category_through': ['exact'],
+            'post_date': ['lt']
+        }
+--------------
+Зарегистрировал фильтр в settings.py
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
+    'news',
+    'accounts',
+    'django_filters',
+]
+--------------
+Создал шаблон
+templates/news/news_search.html
+
+{% extends 'flatpages/default.html' %}
+
+
+{% block title %}
+News_Search
+{% endblock title %}
+
+{% block content %}
+<h1>Поиск статьи</h1>
+    <form action="" method="get">
+        {# Переменная которую передали через контекст, может сгенерировать нам форму с полями #}
+        {{ filterset.form.as_p }}
+        {# Добавим кнопку отправки данных формы #}
+        <input type="submit" value="Найти" />
+    </form>
+<hr>
+{% if news_search|length %}
+    {% for post in news_search %}
+        {{ post.post_title }}
+        <br>
+        {{ post.category_type }}
+            {% for cat in post.post_category.all %}
+                {{ cat.category_name }}
+                <br>
+            {% endfor %}
+
+        {{ post.post_date|date:'d M Y'}}
+        <br>
+        {{ post.post_text|truncatewords:5}}
+        <hr>
+    {% endfor %}
+{% else %}
+    <h1>Извините на данный момент статей нет</h1>
+{% endif %}
+
+{% if page_obj.has_previous %}
+    <a href="?page=1">1</a>
+    {% if page_obj.previous_page_number != 1 %}
+    ...
+    <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number}}</a>
+    {% endif %}
+{% endif %}
+
+{{ page_obj.number }}
+
+{% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+    {% if paginator.num_pages != page_obj.next_page_number %}
+    ...
+    <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+    {% endif %}
+{% endif %}
+
+{% endblock content %}
+----------------------------
+Создал форму
+news/forms.py
+
+from django import forms
+from .models import Post
+
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = [
+            'post_author',
+            'post_category',
+            'post_title',
+            'post_text'
+        ]
+------------------
+Написал представление
+from .filters import PostFilter
+
+class NewsSearch(ListView):
+    model = Post
+    template_name = 'news_search.html'
+    context_object_name = 'news_search'
+    paginate_by = 3
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = PostFilter(self.request.GET, queryset)
+        return self.filterset.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filterset'] = self.filterset
+        return context
+--------------
+Прописал путь
+news/urls.py
+
+from .views import (PostList, PostDetail, NewsCreate, ArticleCreate,
+                    NewsUpdate, ArticleUpdate, NewsDelete, NewsSearch)
+
+path('news/search/', NewsSearch.as_view(), name='news_search'),
 ---------------------------------------
+Чтобы заполненная форма фильтра не пропадала на других страницах
+templatetags/custom_tags.py
 
+from django import template
+
+register = template.Library()
+
+
+@register.simple_tag(takes_context=True)
+def url_replace(context, **kwargs):
+    d = context['request'].GET.copy()
+    for k, v in kwargs.items():
+        d[k] = v
+    return d.urlencode()
+--------------
+добавил его в шаблон
+news_search.html
+
+{% load custom_tags %}
+
+{% else %}
+    <h1>Извините на данный момент статей нет</h1>
+{% endif %}
+
+{% if page_obj.has_previous %}
+    <a href="?{% url_replace page=1 %}">1</a>
+    {% if page_obj.previous_page_number != 1 %}
+    ...
+    <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number}}</a>
+    {% endif %}
+{% endif %}
+
+{{ page_obj.number }}
+
+{% if page_obj.has_next %}
+    <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+    {% if paginator.num_pages != page_obj.next_page_number %}
+    ...
+    <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+    {% endif %}
+{% endif %}
+
+{% endblock content %}
 
 ---------------------------------------
 
