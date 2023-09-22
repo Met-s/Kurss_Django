@@ -2,12 +2,13 @@
 {% load custom_tags %}
 
 {% block title %}
-News_Search
+Поиск постов
 {% endblock title %}
 
 {% block content %}
 <h1>Поиск статьи</h1>
     <form action="" method="get">
+        {{ filterset.form.name__icontains.error }}
         {# Переменная которую передали через контекст, может сгенерировать нам форму с полями #}
         {{ filterset.form.as_p }}
         {# Добавим кнопку отправки данных формы #}

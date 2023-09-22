@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from datetime import datetime
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView, )
 from .models import Post
@@ -7,7 +5,6 @@ from .forms import PostForm
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from .filters import PostFilter
-from pprint import pprint
 
 
 class PostList(ListView):
