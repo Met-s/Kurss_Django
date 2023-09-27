@@ -1,31 +1,49 @@
 {% extends 'flatpages/default.html' %}
 {% load censor_filters %}
 
+
+
 {% block title %}
 Все посты
 {% endblock title %}
 
 {% block content %}
+
 <h1>Все статьи</h1>
 {{ news|length }}
 <hr>
 {% if news|length %}
-    {% for post in news %}
-        {{ post.post_title }}
-        <br>
-        {{ post.category_type }}
-            {% for cat in post.post_category.all %}
-                {{ cat.category_name }}
-                <br>
-            {% endfor %}
+    <table>
+        <tr>
 
-        {{ post.post_date|date:'d M Y'}}
-        <br>
-        {{ post.post_text|truncatechars:21}}
-        <hr>
-    {% endfor %}
-{% else %}
-    <h1>Извините на данный момент статей нет</h1>
+            <th>Автор</th>
+            <th>Название</th>
+            <th>Тип</th>
+            <th>Категория</th>
+            <th>Дата</th>
+            <th>Содержание</th>
+            <th>Действие</th>
+        </tr>
+        {% for post in news %}
+        <col>
+            <td>{{ post.post_author}}</td>
+            <td>{{ post.post_title }}</td>
+            <td>{{ post.category_type }}</td>
+            <td>
+                    {% for cat in post.post_category.all %}
+                        {{ cat.category_name }}
+                    {% endfor %}
+            </td>
+            <td>{{ post.post_date|date:'d M Y'}}</td>
+            <td>{{ post.post_text|truncatewords:3}}</td>
+        </col>
+        {% endfor %}
+    </table>
+
+            <hr>
+
+        {% else %}
+            <h1>Извините на данный момент статей нет</h1>
 {% endif %}
 
 {% if page_obj.has_previous %}
