@@ -5,6 +5,7 @@ from .forms import PostForm
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from .filters import PostFilter
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class PostList(ListView):
@@ -29,7 +30,8 @@ class PostDetail(DetailView):
         return context
 
 
-class NewsCreate(CreateView):
+class NewsCreate(LoginRequiredMixin, CreateView):
+    raise_exception = True
     form_class = PostForm
     model = Post
     template_name = 'news_create.html'
@@ -40,7 +42,8 @@ class NewsCreate(CreateView):
         return super().form_valid(form)
 
 
-class ArticleCreate(CreateView):
+class ArticleCreate(LoginRequiredMixin, CreateView):
+    raise_exception = True
     form_class = PostForm
     model = Post
     template_name = 'article_create.html'
@@ -51,7 +54,8 @@ class ArticleCreate(CreateView):
         return super().form_valid(form)
 
 
-class NewsUpdate(UpdateView):
+class NewsUpdate(LoginRequiredMixin, UpdateView):
+    raise_exception = True
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
@@ -68,7 +72,8 @@ class NewsUpdate(UpdateView):
             return HttpResponse(html)
 
 
-class ArticleUpdate(UpdateView):
+class ArticleUpdate(LoginRequiredMixin, UpdateView):
+    raise_exception = True
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
@@ -85,13 +90,15 @@ class ArticleUpdate(UpdateView):
             return HttpResponse(html)
 
 
-class NewsDelete(DeleteView):
+class NewsDelete(LoginRequiredMixin, DeleteView):
+    raise_exception = True
     model = Post
     template_name = 'post_delete.html'
     success_url = reverse_lazy('news')
 
 
-class NewsSearch(ListView):
+class NewsSearch(LoginRequiredMixin, ListView):
+    raise_exception = True
     model = Post
     template_name = 'news_search.html'
     context_object_name = 'news_search'

@@ -36,7 +36,18 @@
             </td>
             <td>{{ post.post_date|date:'d M Y'}}</td>
             <td>{{ post.post_text|truncatewords:3}}</td>
-        </col>
+            <td>
+                {# {% if request.user.is_authenticated %}#}
+                {% if post.category_type == 'NW' %}
+                <a href="{% url 'news_edit' pk=post.id %}">Редактировать</a>
+                <a href="{% url 'post_delete' pk=post.id %}">Удалить</a>
+                {% else %}
+                <a href="{% url 'article_edit' pk=post.id %}">Редактировать</a>
+                <a href="{% url 'post_delete' pk=post.id %}">Удалить</a>
+                {% endif %}
+                {#{% endif %}#}
+            </td>
+
         {% endfor %}
     </table>
 

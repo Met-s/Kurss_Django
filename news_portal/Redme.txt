@@ -741,11 +741,71 @@ class PostForm(forms.ModelForm):
             )
         return cleaned_data
 ---------------------------------------
+D_5
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Добавил условие с выбором редактирования статья или новость
+news.html
 
+ <td>
+    {% if post.category_type == 'NW' %}
+    <a href="{% url 'news_edit' pk=post.id %}">Редактировать</a>
+    <a href="{% url 'post_delete' pk=post.id %}">Удалить</a>
+    {% else %}
+    <a href="{% url 'article_edit' pk=post.id %}">Редактировать</a>
+    <a href="{% url 'post_delete' pk=post.id %}">Удалить</a>
+    {% endif %}
+</td>
 ---------------------------------------
+Добавил проверку на авторизацию
 
+news/views.py
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class NewsCreate(LoginRequiredMixin, CreateView):
+    raise_exception = True   # Вот здесь
+    form_class = PostForm
+    model = Post
+    template_name = 'news_create.html'
+---------
+news.html
+
+<td>
+    {% if request.user.is_authenticated %}
+
+    {% if post.category_type == 'NW' %}
+    <a href="{% url 'news_edit' pk=post.id %}">Редактировать</a>
+    <a href="{% url 'post_delete' pk=post.id %}">Удалить</a>
+    {% else %}
+    <a href="{% url 'article_edit' pk=post.id %}">Редактировать</a>
+    <a href="{% url 'post_delete' pk=post.id %}">Удалить</a>
+    {% endif %}
+
+    {% endif %}
+</td>
+----------
+Теперь неавторизованные пользователи не увидят ссылок для
+редактирования и удаления статей.
 ---------------------------------------
+Добавил шаблон для вывода сообщения для ошибки 403
+news/templates/403.html
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ошибка 403</title>
+</head>
+<body>
+<h1>У вас нет доступа к этой странице</h1>
+</body>
+</html>
+----------
+Для проверки работы шаблона, проверку проверку на авторизацию пришлось
+за комментировать
+
+<td>
+    {# {% if request.user.is_authenticated %}#}
 ---------------------------------------
 
 ---------------------------------------
