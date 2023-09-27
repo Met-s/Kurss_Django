@@ -807,7 +807,26 @@ news/templates/403.html
 <td>
     {# {% if request.user.is_authenticated %}#}
 ---------------------------------------
+Форма для входа (регистрации) пользователя
+news/templates/registration/login.html
 
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Войти">
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+{% endblock content %}
+----------
+Настроил так чтобы после входа нас перенаправляло на страницу с постами
+добавим строчку в
+settings.py
+
+LOGIN_REDIRECT_URL = "/news"  # Добавил ссылку на страницу для
+    перенаправления после входа пользователя
 ---------------------------------------
 
 ---------------------------------------
