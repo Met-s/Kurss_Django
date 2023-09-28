@@ -828,7 +828,88 @@ settings.py
 LOGIN_REDIRECT_URL = "/news"  # Добавил ссылку на страницу для
     перенаправления после входа пользователя
 ---------------------------------------
+Регистрация
+!!!!!!!!!!!!!!!!
+Создал отдельное приложение для регистрации пользователей
+python manage.py startapp accounts
+-----------------
+Добавил форму регистрации по имени и email
 
+Создал форму в:
+accounts/forms.py
+
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+
+class SignUpForm(UserCreationForm):
+    email = forms.EmailField(label="Email")
+
+    class Meta:
+        model = User
+        fields = (
+            "username",
+            "email",
+            "password1",
+            "password2",
+        )
+--------------
+Создал представление
+accounts/views.py
+
+from django.contrib.auth.models import User
+from django.views.generic.edit import CreateView
+from .forms import SignUpForm
+from django.urls import reverse_lazy
+
+
+class SignUp(CreateView):
+    model = User
+    form_class = SignUpForm
+    success_url = reverse_lazy('news')
+    template_name = 'registration/signup.html'
+--------------
+Добавим шаблон:
+news/templates/registration/signup.html
+
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Sing up">
+  </form>
+{% endblock content %}
+--------------
+Подключил urlpatterns, чтобы регистрация стала доступна на сайте.
+Для этого создал и заполнил файл urls.py в новом приложении.
+accounts/urls.py
+
+from django.urls import path
+from .views import SignUp
+
+urlpatterns = [
+    path('signup/', SignUp.as_view(), name='signup'),
+]
+---------------
+Подключил urls приложения account в главном приложении django_d4.
+news_portal/urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('pages/', include('django.contrib.flatpages.urls')),
+    path('news/', include('news.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
+
+    path('accounts/', include('accounts.urls')), # вот это
+]
+---------------
+После регистрации нас перенаправит на страницу news с постами.
 ---------------------------------------
 
 ---------------------------------------
