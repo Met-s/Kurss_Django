@@ -5,7 +5,9 @@ from .forms import PostForm
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from .filters import PostFilter
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin, PermissionRequiredMixin
+)
 
 
 class PostList(ListView):
@@ -30,8 +32,9 @@ class PostDetail(DetailView):
         return context
 
 
-class NewsCreate(LoginRequiredMixin, CreateView):
-    raise_exception = True
+class NewsCreate(PermissionRequiredMixin, CreateView):
+    permission_required = 'news.add_post'
+    # raise_exception = True
     form_class = PostForm
     model = Post
     template_name = 'news_create.html'
@@ -42,8 +45,8 @@ class NewsCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ArticleCreate(LoginRequiredMixin, CreateView):
-    raise_exception = True
+class ArticleCreate(PermissionRequiredMixin, CreateView):
+    permission_required = 'news.add_post'
     form_class = PostForm
     model = Post
     template_name = 'article_create.html'
@@ -54,8 +57,8 @@ class ArticleCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class NewsUpdate(LoginRequiredMixin, UpdateView):
-    raise_exception = True
+class NewsUpdate(PermissionRequiredMixin, UpdateView):
+    permission_required = 'news.add_post'
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
@@ -72,8 +75,8 @@ class NewsUpdate(LoginRequiredMixin, UpdateView):
             return HttpResponse(html)
 
 
-class ArticleUpdate(LoginRequiredMixin, UpdateView):
-    raise_exception = True
+class ArticleUpdate(PermissionRequiredMixin, UpdateView):
+    permission_required = 'news.add_post'
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
@@ -90,8 +93,8 @@ class ArticleUpdate(LoginRequiredMixin, UpdateView):
             return HttpResponse(html)
 
 
-class NewsDelete(LoginRequiredMixin, DeleteView):
-    raise_exception = True
+class NewsDelete(PermissionRequiredMixin, DeleteView):
+    permission_required = 'news.add_post'
     model = Post
     template_name = 'post_delete.html'
     success_url = reverse_lazy('news')

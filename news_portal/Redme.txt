@@ -1019,31 +1019,113 @@ urlpatterns = [
 Регистрация и вход через Yandex
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+Добавил настройки сайта, которые требуются для allauth
 
----------------
+1. Войдём в панель администратора
+    • http://127.0.0.1:8000/admin/
+    • вкладка Sites - отредактировать объект Site
+        Domain name: 127.0.0.1
+        Display name: example.com # и сохранить
+-------------
+Создал новый My apps, но яндекс отказался его принимать, выдал сообщение о
+подозрительном сайте, поэтому использовал старый который применял при прохождении
+модуля. И всё заработало!
+------------
+2. Регистрируем приложение в Yndex для работы с сервисом
+    • Преходим https://oauth.yandex.com/client/new и заполняем обязательные поля
+        • General
+            • Service name - SkillFactoryTest
+        • Platforms
+            • Choose at least one platform
+                х Web setvices
+                  Redirect URI
+                  URL the user is redirected to after allowing or denying access to the app
+                     http://127.0.0.1:8000
+                     http://127.0.0.1:8000/accounts/yandex/login/callback
+        • Data access
+            To add a permission, enter its name
+                Permission name # поле для выбора по каким полям проходит регисрация
+                Access to email address # у нас заявлено что по emaill
+                login:email
+                - # и по username
+                Access to username, first name and surname, gender
+                login:info
+3. Подтверждаем создание приложения и видим секретные данные. Они нам понадобятся
+    для регистрации провайдера в нашем Django проекте.
+4. Секретные данные теперь нужно перенести в наше приложение.
+    Открываем : http://127.0.0.1:8000/admin/socialaccount/socialapp/add/
+Или вот так в админке:
+Home › Social Accounts › Social applications › Add social application
 
+ Provider: Yandex
+    Name: любое имя например Yandex
+    Client id: ID с страницы приложения Yndex. Поле: "ClientID"
+    Seret key: Password с страницы приложения Yandex. Поле: "Client secret"
+    Sites переносим единственный сайт в Chosen sites
 ---------------
+И сохраняем.
+---------------
+Группы пользователей
+!!!!!!!!!!!!!!!!!!!!!!!!!!
+Через панель администратора самый простой способ
+Панель администратора - Groups - Add group
 
+Создал группу authors.
+Выдал ей права на создание и редактирование статей.
+И создал группу users, для того чтобы новые пользователи при регистрации
+автоматически добавлялись в эту группу.
+И сохранил.
 ---------------
+Для этого изменим форму SignupForm полностью переписав файл
+accounts/forms.py
 
----------------
+from allauth.account.forms import SignupForm
+from django.contrib.auth.models import Group
 
----------------
 
+class CustomSignUpForm(SignupForm):
+    def save(self, request):
+        user = super().save(request)
+        users = Group.objects.get(name="users")
+        user.groups.add(users)
+        return user
 ---------------
+Чтобы allauth распознал форму как ту,что должна выполняться вместо формы
+по умолчанию, добавить строчку в файл настроек проекта
+news_portal/settings.py
 
+ACCOUNT_FORMS = {"signup": "accounts.forms.CustomSignUpForm"}
 ---------------
+Добавление группы будет работать только для пользователей, которые регистрируются
+с помощью почты и пароля.
+---------------
+Проверка прав доступа в представлении
+!!!!!!!!!!!!!!!!!!!!!
 
----------------
+news/view.py
 
----------------
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin, PermissionRequiredMixin
+)
 
+class NewsCreate(PermissionRequiredMixin, CreateView):
+    permission_required = 'news.add_post' # Добавляем проверку
+    # raise_exception = True
+    form_class = PostForm
+    model = Post
+    template_name = 'news_create.html'
 ---------------
+Проделываем со всеми представлениями где нужна проверка.
 ---------------------------------------
-
+По заданию D_5 выполнил.
 ---------------------------------------
-
+В проект не добавлял в задание это не входит
 ---------------------------------------
+Проверка прав в шаблоне
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Чтобы скрыть лишние ссылки, можно установить проверки в самом шаблоне:
+templates/news/news.html
+
 
 ---------------------------------------
 
