@@ -46,15 +46,22 @@ table {
                                 <span class="sr-only"></span>
                             </a>
                         </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/accounts/login/">Вход/Регистрация
+                                <span class="sr-only"></span>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/news/">Статьи</a>
                         </li>
+                        {% if request.user.is_authenticated %}
                          <li class="nav-item">
                             <a class="nav-link" href="/news/create/">Написать Новость</a>
                         </li>
                          <li class="nav-item">
                             <a class="nav-link" href="/news/articles/create/">Написать Статью</a>
                         </li>
+                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link" href="/news/search/">Поиск</a>
                         </li>

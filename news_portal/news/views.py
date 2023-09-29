@@ -100,8 +100,7 @@ class NewsDelete(PermissionRequiredMixin, DeleteView):
     success_url = reverse_lazy('news')
 
 
-class NewsSearch(LoginRequiredMixin, ListView):
-    raise_exception = True
+class NewsSearch(ListView):
     model = Post
     template_name = 'news_search.html'
     context_object_name = 'news_search'
