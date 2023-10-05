@@ -1125,10 +1125,58 @@ class NewsCreate(PermissionRequiredMixin, CreateView):
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Чтобы скрыть лишние ссылки, можно установить проверки в самом шаблоне:
 templates/news/news.html
-
-
 ---------------------------------------
+D_6
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Создал приветственное письмо новому пользователю с ссылкой на сайт, письмо
+приходит на почту при успешной регистрации.
+-------------
+Добавил блок настроек работы с почтой
 
+settings.py
+
+# console - будет печатать в консоль
+# smtp - отправляет на почту
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "si-mart"  # Без @yandex.ru
+EMAIL_HOST_PASSWORD = email_host_password  # config.py
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = "si-mart@yandex.ru"
+-------------
+Отправка письма в текстовом и в HTML формате
+Переписал форму регистрации
+
+accounts/forms.py
+
+from allauth.account.forms import SignupForm
+from django.contrib.auth.models import Group
+from django.core.mail import EmailMultiAlternatives
+
+class CustomSignUpForm(SignupForm):
+    def save(self, request):
+        user = super().save(request)
+        users = Group.objects.get(name="users")
+        user.groups.add(users)
+        subject = 'Добро пожаловать на наш новостной портал!'
+        text = f'{user.username}, вы успешно зарегистрировались!'
+        html = (
+            f'<b>{user.username}</b>, вы успешно зарегистрировались на '
+            f'нашем новостном портале! Добро пожаловать:'
+            f'<a href="http://127.0.0.1:8000/news">На сайт</a>!'
+        )
+        msg = EmailMultiAlternatives(
+            subject=subject, body=text, from_email=None, to=[user.email]
+        )
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+        return user
+-------------
+Теперь пользователь после регистрации получает приветственное письмо с ссылкой
+на страницу со всеми новостями.
 ---------------------------------------
 
 ---------------------------------------

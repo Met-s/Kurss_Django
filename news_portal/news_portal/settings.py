@@ -153,7 +153,8 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_FORMS = {"signup": "accounts.forms.CustomSignUpForm"}
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # console
+# console, smtp
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = "si-mart"  # Без @yandex.ru
@@ -161,5 +162,3 @@ EMAIL_HOST_PASSWORD = email_host_password  # config.py
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = "si-mart@yandex.ru"
-EMAIL_SUBJECT_PREFIX = "DORATY : "
-
