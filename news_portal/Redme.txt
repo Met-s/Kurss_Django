@@ -1178,6 +1178,21 @@ class CustomSignUpForm(SignupForm):
 Теперь пользователь после регистрации получает приветственное письмо с ссылкой
 на страницу со всеми новостями.
 ---------------------------------------
+Подписка пользователей на категории
+-------------
+Создал таблицу,в БД, чтобы хранить список категорий, на которые подписан
+пользователь.
+
+news/models.py
+
+class Subscriber(models.Model):
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE,
+                             related_name='subscriptions')
+    category = models.ForeignKey(to=Category, on_delete=models.CASCADE,
+                                 related_name='subscriptions')
+-------------
+
+
 
 ---------------------------------------
 
