@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.urls import reverse
+from pprint import pprint
 
 
 class Author(models.Model):
@@ -91,7 +92,8 @@ class Comment(models.Model):
 
 
 class Subscriber(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE,
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='subscriptions')
-    category = models.ForeignKey(to='Category', on_delete=models.CASCADE,
+    category = models.ForeignKey(Category,
+                                 on_delete=models.CASCADE,
                                  related_name='subscriptions')

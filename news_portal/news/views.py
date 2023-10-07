@@ -1,6 +1,6 @@
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView, )
-from .models import Post, Category, Subscriber
+from .models import Post, Category, Subscriber, PostCategory
 from .forms import PostForm
 from django.http import HttpResponse
 from django.urls import reverse_lazy
@@ -126,17 +126,16 @@ class NewsSearch(ListView):
 @login_required
 @csrf_protect
 def subscriptions(request):
-
     if request.method == 'POST':
-        category_id = request.POST.get('category_id')
+        category_pk = request.POST.get('category_pk')
 
-        category = Category.objects.get(id=category_id)
+        category = Category.objects.get(pk=category_pk)
         action = request.POST.get('action')
 
-        pprint(category)
-        pprint(f'CATEGORY: {category_id}')
         if action == 'subscribe':
-            Subscriber.objects.create(user=request.user, category=category)
+            Subscriber.objects.create(user=request.user,
+                                      category=category)
+
         elif action == 'unsubscribe':
             Subscriber.objects.filter(
                 user=request.user,
