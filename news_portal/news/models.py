@@ -93,7 +93,7 @@ class Comment(models.Model):
 
 class Subscriber(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='subscriptions')
+                             related_name='user_sub')
     category = models.ForeignKey(Category,
                                  on_delete=models.CASCADE,
-                                 related_name='subscriptions')
+                                 related_name='category_sub')

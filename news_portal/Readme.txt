@@ -1191,9 +1191,91 @@ class Subscriber(models.Model):
     category = models.ForeignKey(to=Category, on_delete=models.CASCADE,
                                  related_name='subscriptions')
 -------------
+Добавил переменную  в
+settings.py
 
+SITE_URL = "http://127.0.0.1:8000"
+-------------
+Написал Функцию, которая отправляет письмо. Пользователю подписавшемуся на
+категорию поста, при создании поста в этой категории.
 
+news/signals.py
 
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
+from django.template.loader import render_to_string
+
+from .models import PostCategory
+
+# Отправляет письмо пользователю text/html
+
+def send_notification(preview, pk, post_title, subscribers):
+    html_content = render_to_string(
+        'post_email.html',
+        {
+            'text': preview,
+            'link': f'{settings.SITE_URL}/news/{pk}'
+        }
+    )
+    msg = EmailMultiAlternatives(
+        subject=post_title,
+        body='',
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=subscribers,
+    )
+    msg.attach_alternative(html_content, 'text/html')
+    msg.send()
+
+# Собирает email-ы подписчиков на категорию после создании статьи когда ей
+# присвоится категория
+
+@receiver(m2m_changed, sender=PostCategory)
+def post_created(sender, instance, **kwargs):
+    if kwargs['action'] == 'post_add':
+        categories = instance.post_category.all()
+        subscribers: list[str] = []
+        for category in categories:
+            subscribers += category.category_sub.all()
+        subscribers = [s.user.email for s in subscribers]
+        send_notification(instance.preview(), instance.pk, instance.post_title,
+                          subscribers)
+-------------
+Просто так сигналы не начнут работать. Нам нужно выполнить этот модуль (файл с
+Python-кодом). Для этого подойдёт авто-созданный файл apps.py в нашем
+приложении. В этом файле есть класс с настройками нашего приложения. Добавим в
+него метод ready, который выполнится при завершении конфигурации нашего
+приложения news. В самом методе импортируем сигналы, таким образом
+зарегистрировав их.
+
+news/apps..py
+
+from django.apps import AppConfig
+
+class NewsConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'news'
+
+    def ready(self):
+        from . import signals  # выполнение модуля -> регистрация сигналов
+-------------
+Создал шаблон сообщения которое будет отправляться подписчику
+
+templates/news/post_email.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Здравствуйте! Появилась новая статья в категории на которую вы подписаны</h2>
+<p>{{ text }}</p>
+<h3><a href="{{ link }}">Читать полностью</a></h3>
+</body>
+</html>
 ---------------------------------------
 
 ---------------------------------------

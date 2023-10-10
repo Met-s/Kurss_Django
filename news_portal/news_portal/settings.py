@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.flatpages',
-    'news',
+    'news.apps.NewsConfig',
     'accounts',
     'django_filters',
     'allauth',
@@ -152,6 +152,8 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_FORMS = {"signup": "accounts.forms.CustomSignUpForm"}
+
+SITE_URL = "http://127.0.0.1:8000"
 
 # console, smtp
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
