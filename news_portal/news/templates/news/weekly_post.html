@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Здравствуйте! В категории на которую вы
+    подписаны, вышли новые статьи за неделю.</h2>
+<ul>
+    {% for post in posts %}
+        {% for cat in post.post_category.all %}
+                       {{ cat.category_name }} :
+                    {% endfor %}
+
+        {{ post.preview }}
+
+
+    <li>
+        <a href="{{ link }}{{post.get_absolute_url}}">{{ post.post_title}}</a>
+    </li>
+
+    {% endfor %}
+</ul>
+</body>
+</html>
