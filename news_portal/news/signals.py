@@ -32,7 +32,7 @@ def post_created(sender, instance, **kwargs):
     if kwargs['action'] == 'post_add':
         categories = instance.post_category.all()
         subscribers: list[str] = []
-        pprint(f'categories : {categories}')
+
         for category in categories:
             subscribers += category.category_sub.all()
         subscribers = [s.user.email for s in subscribers]

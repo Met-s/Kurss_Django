@@ -1277,5 +1277,215 @@ templates/news/post_email.html
 </body>
 </html>
 ---------------------------------------
+Создал еженедельную рассылку пользователям в пятницу 18:00
+Установил django-apscheduler
+pip install django-apscheduler
+------------------
+Зарегистрировал в settings
+django_apschedulerv
 
+Добавил в settings
+
+APSCHEDULER_DATETIME_FORMAT = 'N j, Y, f:s a' # формат даты
+APSCHEDULER_RUN_NOW_TIMEOUT = 25 # продолжительность выполнения 25 сек.
+------------------
+
+------------------
+
+------------------
+Это приложение использует модели, поэтому нужно выполнить миграции для создания
+таблиц в БД
+python manage.py makemigrations
+python manage.py migrate
+---------------
+Тепреь как написанно в документации, создадим свою джанго-команду для
+выполнения переодических задач.
+    Путь до файла с командой очень важен. Файл должен лежать в одном из наших
+приложений, по пути management/commands.
+А название файла будет идентично тому как мы хотим назвать КОМАНДУ.
+---------------
+Получается при создании файла
+news/management/commands/runapscheduler.py у нас станет доступна команда
+python manage.py runapscheduler.
+---------------
+Создал файл:
+news/management/commands/runapscheduler.py
+
+import datetime
+import logging
+
+from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.triggers.cron import CronTrigger
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
+from django.core.mail import mail_managers
+from django.core.management.base import BaseCommand
+from django.template.loader import render_to_string
+from django_apscheduler import util
+from django_apscheduler.jobstores import DjangoJobStore
+from django_apscheduler.models import DjangoJobExecution
+from news.models import Post, Category, Subscriber
+from news_portal import settings
+
+logger = logging.getLogger(__name__)
+
+
+def my_job():
+    today = datetime.datetime.now()
+    last_week = today - datetime.timedelta(days=7)
+    posts = Post.objects.filter(post_date__gte=last_week)
+
+    # имена категорий, постов вышедших за неделю
+    categories = set(posts.values_list('post_category__category_name', flat=True))
+    # --------------------------------------------------
+    # подписчики с категориями на которые они подписаны
+    subscribers: list[str] = []
+    subscribers = set(Subscriber.objects.filter(
+        category__category_name__in=categories))
+
+    # список категорий у подписчиков
+    subscribers_cat = set(s.category for s in subscribers)
+
+    # отфильтровал посты по категориям, остались только те которые есть в
+    списке подписчиков
+    pos = set(posts.filter(post_category__category_name__in=subscribers_cat))
+
+    # вытащил email-ы подписчиков на которые будет осуществляться рассылка
+    subscriber = set(s.user.email for s in subscribers)
+
+    # --------------------------------------------------
+    html_content = render_to_string(
+        'weekly_post.html',
+        {
+            'link': settings.SITE_URL,
+            'posts': pos,
+        }
+    )
+    msg = EmailMultiAlternatives(
+        subject='Статьи за неделю',
+        body='',
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=subscriber,
+    )
+
+    msg.attach_alternative(html_content, 'text/html')
+    msg.send()
+
+
+# ------Отладка------------------------------------------
+
+    print(f'DOROTY DAUN : ')
+
+    print(f'categories : {categories}')
+    print(f'subscribers : {subscribers}')
+
+    print(f'subscribers_cat : {subscribers_cat}')
+    print(f'subscriber : {subscriber}')
+# ------------------------------------------------
+
+
+# @util.close_old_connections
+def delete_old_job_executions(max_age=604_800):
+#     """
+#     Это задание удаляет записи выполнения заданий APScheduler старше
+#     максимального возраста 'max_age' из БД.
+#     Это помогает предотвратить заполнение БД старыми историческими данными,
+#     записи которые больше не нужны.
+#     : param max_age: максимальная продолжительность хранения исторических
+#     записей выполнения заданий. По умолчанию 7 дней.
+#     """
+    DjangoJobExecution.objects.delete_old_job_executions(max_age)
+
+
+class Command(BaseCommand):
+    help = "Runs APScheduler."
+
+    def handle(self, *args, **options):
+        scheduler = BlockingScheduler(timezone=settings.TIME_ZONE)
+        scheduler.add_jobstore(DjangoJobStore(), "default")
+
+        scheduler.add_job(
+            my_job,
+            trigger=CronTrigger(day_of_week="fri", hour="18", minute="00"),
+            # day_of_week="fri", hour="18", minute="00"  пятница 18:00  wed
+            id="my_job",
+            max_instances=1,
+            replace_existing=True,
+        )
+        logger.info("Added job 'my_job'.")
+
+        scheduler.add_job(
+            delete_old_job_executions,
+            trigger=CronTrigger(
+                day_of_week="mon", hour="00", minute="00"
+            ),
+            id="delete_old_job_executions",
+            max_instances=1,
+            replace_existing=True,
+        )
+        logger.info("Added weekly job: 'delete_old_job_executions'.")
+
+        try:
+            logger.info("Starting scheduler...")
+            scheduler.start()
+        except KeyboardInterrupt:
+            logger.info("Stopping scheduler...")
+            scheduler.shutdown()
+            logger.info("Scheduler shut down successfully!")
+
+---------------
+Создал шаблон письма с ссылками на статьи, которое будет отправляться
+пользователю
+
+templates/news/weekly_post.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Здравствуйте! В категории на которую вы
+    подписаны, вышли новые статьи за неделю.</h2>
+<ul>
+    {% for post in posts %}
+        {% for cat in post.post_category.all %}
+                       {{ cat.category_name }} :
+                    {% endfor %}
+
+        {{ post.preview }}
+
+
+    <li>
+        <a href="{{ link }}{{post.get_absolute_url}}">{{ post.post_title}}</a>
+    </li>
+
+    {% endfor %}
+</ul>
+</body>
+</html>
+---------------
+Для запуска apscheduler:
+Открыть второй терминал и набрать команду
+python manage.py runapscheduler
+---------------
+Для тестирования и настройки:
+scheduler.add_job(
+            my_job,
+            trigger=CronTrigger(second="*/5"), # будет запускаться каждые 5 сек
+            # day_of_week="fri", hour="18", minute="00"  пятница 18:00  wed
+            id="my_job",
+            max_instances=1,
+            replace_existing=True,
+
+В settings.py
+
+console - выводит в консоль
+smtp - отправляет email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' -отправляет email
+
+
+
+---------------
 ---------------------------------------

@@ -11,8 +11,6 @@ from django.template.loader import render_to_string
 from django_apscheduler import util
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
-
-
 from news.models import Post, Category, Subscriber
 from news_portal import settings
 
@@ -23,64 +21,44 @@ def my_job():
     today = datetime.datetime.now()
     last_week = today - datetime.timedelta(days=7)
     posts = Post.objects.filter(post_date__gte=last_week)
-    categories = set(posts.values_list('post_category__id',
-                                       flat=True))
+    categories = set(posts.values_list('post_category__category_name', flat=True))
     # --------------------------------------------------
     subscribers: list[str] = []
-    subscribers = set(Subscriber.objects.filter(category__id__in=categories))
-    print(f'Sub : {subscribers}')
-    subscribers = set(s.user.email for s in subscribers)
+    subscribers = set(Subscriber.objects.filter(
+        category__category_name__in=categories))
 
-    # subsrib = Subscriber.objects.all()
-    #
-    # for category in categories:
-    #     subscribers += category.category_sub.all()
-    # subscribers = [s.user.email for s in subscribers]
+    subscribers_cat = set(s.category for s in subscribers)
+    pos = set(posts.filter(post_category__category_name__in=subscribers_cat))
+    subscriber = set(s.user.email for s in subscribers)
 
-
-
-    # subscribers = set(Subscriber.objects.filter(
-    #     category__id__in=categories).values_list(
-    #     'user__email', flat=True))
-
-   # ---------------------------------------------------
+    # --------------------------------------------------
     html_content = render_to_string(
         'weekly_post.html',
         {
             'link': settings.SITE_URL,
-            'posts': posts,
+            'posts': pos,
         }
     )
     msg = EmailMultiAlternatives(
         subject='Статьи за неделю',
         body='',
         from_email=settings.DEFAULT_FROM_EMAIL,
-        to=subscribers,
+        to=subscriber,
     )
+
     msg.attach_alternative(html_content, 'text/html')
     msg.send()
 
-    # def my_job():
-    #     today = datetime.datetime.now()
-    #     last_week = today - datetime.timedelta(days=1)
-    #     posts = Post.objects.filter(post_date__gte=last_week)
-    #     categories = set(posts.values_list('post_category__category_name',
-    #                                        flat=True))
-    #     subscribers = set(Category.objects.filter(
-    #         category_name__in=categories).values_list(
-    #         'category_sub__user__email', flat=True))
+
 
     print(f'DOROTY DAUN : ')
-    # print(f'today : {today}')
-    # print(f'last_week : {last_week}')
-    # print(f'posts : {posts}')
+
     print(f'categories : {categories}')
     print(f'subscribers : {subscribers}')
-    print(f'posts : {posts}')
 
-    # products = Product.objects.order_by('price')[:3]
-    # text = '\n'.join(['{} - {}'.format(p.name, p.price) for p in products])
-    # mail_managers("Самые дешёвые товары", text)
+    print(f'subscribers_cat : {subscribers_cat}')
+    print(f'subscriber : {subscriber}')
+
 
 
 # @util.close_old_connections
