@@ -1484,7 +1484,147 @@ scheduler.add_job(
 console - выводит в консоль
 smtp - отправляет email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' -отправляет email
+---------------------------------------
+D_7
+===============================================================================
+Для использования асинхронного взаимодействия в Django-проектах проверенным
+временем решением является библиотека Celery.
+Установил Celery
+---------------
+pip install celery
+---------------
+Создал файл:
+news_portal/news_portal/celery.py
+celery.py
 
+import os
+from celery import Celery
+
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE',
+                      'news_portal.settings')
+app = Celery('news')
+app.config_from_object('django.conf:settings',
+                       namespace='CELERY')
+app.autodiscover_tasks()
+---------------
+• В первую очередь мы импортируем библиотеку для взаимодействия с операционной
+    системой и саму библиотеку Celery.
+• Второй строчкой мы связываем настройки Django с настройками Celery через
+    переменную окружения.
+• Далее мы создаем экземпляр приложения Celery и устанавливаем для него файл
+    конфигурации. Мы также указываем пространство имен, чтобы Celery сам
+    находил все необходимые настройки в общем конфигурационном файле
+    settings.py. Он их будет искать по шаблону «CELERY_***».
+• Последней строчкой мы указываем Celery автоматически искать задания в файлах
+    tasks.py каждого приложения проекта.
+---------------
+Добавил в файл __init__.py
+news_portal/news_portal/__init__.py
+__init__.py
+
+from .celery import app as celery_app
+
+__all__ = ('celery_app',)
+---------------
+На этом базовые настройки Celery окончены.
+---------------------------------------
+Установил Redis
+---------------
+Redis установлен локально
+Чтобы запустить
+redis-server
+redis-cli
+---------------
+Проверка работы redis
+127.0.0.1:6379> ping
+если всё хорошо получим ответ
+PONG
+---------------
+Команды redis
+127.0.0.1:6379> info  # показывает информацию о бд
+db0:keys=61,expires=58,avg_ttl=25611094 # db0 - это номер БД
+127.0.0.1:6379> flushdb  # очищает текущую БД
+redis-cli -n 8 flushdb # очищает  БД с номером восемь
+redis-cli flushall # добавляет всю БД
+---------------
+Настроил поддержку Redis в Python и Celery
+
+pip3 install redis
+pip3 install -U "celery[redis]"
+---------------
+Сначала запускаем- redis-server
+Затем запускаем- redis-cli
+Работает
+---------------
+Добавил настройки в конфигурацию проекта (settings.py)
+settings.py
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+---------------------------------------
+Если вы используете Redis Labs, то переменные CELERY_BROKER_URL и
+CELERY_RESULT_BACKEND должны строиться по шаблону:
+
+redis://логин:пароль@endpoint:port
+где endpoint и port вы также берёте из настроек Redis Labs.
+
+Также обратите внимание, что Celery с версией выше 4+ не поддерживается Windows.
+Поэтому если у вас версия Python 3.10 и выше, запускайте Celery, добавив в
+команду флаг: --polo=solo.
+
+celery -A news_portal worker -l INFO --pool=solo
+---------------------------------------
+Запускаем:
+В первом терминале вводим команду:
+
+python3 manage.py runserver
+---------------
+Во втором:
+
+celery -A news_portal worker -l INFO --pool=solo
+---------------
+ -------------- celery@DESKTOP-IH4T6KH v5.3.4 (emerald-rush)
+--- ***** -----
+-- ******* ---- Windows-10-10.0.19045-SP0 2023-10-18 15:14:46
+- *** --- * ---
+- ** ---------- [config]
+- ** ---------- .> app:         news:0x2be4b5e3310
+- ** ---------- .> transport:   redis://localhost:6379//
+- ** ---------- .> results:     redis://localhost:6379/
+- *** --- * --- .> concurrency: 4 (solo)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** -----
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+
+
+[tasks]
+---------------
+Всё работает!
+
+---------------------------------------
+
+---------------------------------------
+
+---------------------------------------
+
+---------------------------------------
+
+---------------------------------------
+
+---------------------------------------
+
+---------------------------------------
+
+---------------------------------------
+
+---------------------------------------
+
+---------------------------------------
 
 
 ---------------
