@@ -1,0 +1,9 @@
+Установил приложения:
+pip install django
+django-apscheduler
+pip install celery
+pip install redis
+pip install -U "celery[redis]"
+value
+django-filter
+django-allauth

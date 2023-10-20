@@ -1605,7 +1605,19 @@ celery -A news_portal worker -l INFO --pool=solo
 [tasks]
 ---------------
 Всё работает!
-
+==============================================================================
+Восстановил  GitHab:
+Установил приложения:
+pip install django
+django-apscheduler
+pip install celery
+pip install redis
+pip install -U "celery[redis]"
+value
+django-filter
+django-allauth
+==============================================================================
+Всё работает!!!
 ---------------------------------------
 
 ---------------------------------------
