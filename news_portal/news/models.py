@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.urls import reverse
-from pprint import pprint
 
 
 class Author(models.Model):
@@ -28,7 +27,8 @@ class Author(models.Model):
 
 class Category(models.Model):
     category_name = models.CharField(max_length=64, unique=True)
-    subscribers = models.ManyToManyField(User, related_name='categories')
+    subscribers = models.ManyToManyField(User, related_name='categories',
+                                         default='')
 
     def __str__(self):
         return f'{self.category_name}'

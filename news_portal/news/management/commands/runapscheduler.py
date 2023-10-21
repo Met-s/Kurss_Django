@@ -21,7 +21,8 @@ def my_job():
     today = datetime.datetime.now()
     last_week = today - datetime.timedelta(days=7)
     posts = Post.objects.filter(post_date__gte=last_week)
-    categories = set(posts.values_list('post_category__category_name', flat=True))
+    categories = set(
+        posts.values_list('post_category__category_name', flat=True))
     # --------------------------------------------------
     subscribers: list[str] = []
     subscribers = set(Subscriber.objects.filter(
@@ -50,27 +51,16 @@ def my_job():
     msg.send()
 
 
-
-    print(f'DOROTY DAUN : ')
-
-    print(f'categories : {categories}')
-    print(f'subscribers : {subscribers}')
-
-    print(f'subscribers_cat : {subscribers_cat}')
-    print(f'subscriber : {subscriber}')
-
-
-
 # @util.close_old_connections
 def delete_old_job_executions(max_age=604_800):
-#     """
-#     Это задание удаляет записи выполнения заданий APScheduler старше
-#     максимального возраста 'max_age' из БД.
-#     Это помогает предотвратить заполнение БД старыми историческими данными,
-#     записи которые больше не нужны.
-#     : param max_age: максимальная продолжительность хранения исторических
-#     записей выполнения заданий. По умолчанию 7 дней.
-#     """
+    """
+    Это задание удаляет записи выполнения заданий APScheduler старше
+    максимального возраста 'max_age' из БД.
+    Это помогает предотвратить заполнение БД старыми историческими данными,
+    записи которые больше не нужны.
+    : param max_age: максимальная продолжительность хранения исторических
+    записей выполнения заданий. По умолчанию 7 дней.
+    """
     DjangoJobExecution.objects.delete_old_job_executions(max_age)
 
 

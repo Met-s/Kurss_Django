@@ -13,8 +13,6 @@ from django.db.models import Exists, OuterRef
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 
-from pprint import pprint
-
 
 class PostList(ListView):
     model = Post
@@ -40,7 +38,6 @@ class PostDetail(DetailView):
 
 class NewsCreate(PermissionRequiredMixin, CreateView):
     permission_required = 'news.add_post'
-    # raise_exception = True
     form_class = PostForm
     model = Post
     template_name = 'news_create.html'
