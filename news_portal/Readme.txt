@@ -1673,10 +1673,71 @@ def post_created(sender, instance, **kwargs):
 ---------------
 По факту взял сигнал и разложил его.
 Обработав связь m2m_changed.
+---------------------------------------
+Реализовал еженедельную рассылку с последними новостями (каждый понедельник в
+8:00 утра).
+Для этого переделал функцию из runapsheuler.py
 ---------------
 
----------------------------------------
+news/tasks.py
 
+from datetime import datetime, timedelta
+
+@shared_task
+def post_weekly_notification():
+    today = datetime.now()
+    last_week = today - timedelta(days=7)
+    posts = Post.objects.filter(post_date__gte=last_week)
+    categories = set(
+        posts.values_list('post_category__category_name', flat=True))
+    # --------------------------------------------------
+    # subscribers: list[str] = []
+    subscribers = set(Subscriber.objects.filter(
+        category__category_name__in=categories))
+    subscribers_cat = set(s.category for s in subscribers)
+    pos = set(posts.filter(post_category__category_name__in=subscribers_cat))
+    subscriber = set(s.user.email for s in subscribers)
+    # --------------------------------------------------
+    html_content = render_to_string(
+        'weekly_post.html',
+        {
+            'link': settings.SITE_URL,
+            'posts': pos,
+        }
+    )
+    msg = EmailMultiAlternatives(
+        subject='Статьи за неделю',
+        body='',
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=subscriber,
+    )
+
+    msg.attach_alternative(html_content, 'text/html')
+    msg.send()
+---------------
+Добавил задачу в
+celery.py
+
+from celery.schedules import crontab
+
+app.conf.beat_schedule = {
+    'action_every_monday_8am': {
+        'task': 'news.tasks.post_weekly_notification',
+        'schedule': crontab(hour='8', minute='0', day_of_week='monday'),
+    }
+}
+---------------------------------------
+Для запуска задач по расписанию,необходимо запускать Celery с флагом -B,
+который позволяет запускать периодические задачи:
+
+celery -A news_portal worker -l INFO -B
+-----------
+Для запуска периодических задач на Windows запустите в разных окнах терминала:
+
+celery -A news_portal worker -l INFO pool=solo
+и
+celery -A news_portal beat -l INFO pool=solo #  c (pool=solo) выдаёт ошибку
+    без него всё работает
 ---------------------------------------
 
 ---------------------------------------
