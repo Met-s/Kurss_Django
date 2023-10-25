@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load cache %}
+{% cache 600 header %}
+
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -12,6 +15,7 @@
         {% load static %}
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
     </head>
+{% endcache %}
     <style>
     table {
    border: 1px solid #99999FFF;
@@ -28,6 +32,7 @@ table {
    width: 100%;
 }
 </style>
+{% cache 600 body %}
     <body>
         <!-- Responsive navbar-->
        <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
@@ -74,6 +79,7 @@ table {
                 </div>
             </div>
         </nav>
+{% endcache %}
         <!-- Page content -->
         <div class="container">
             <div class="row">
@@ -84,4 +90,5 @@ table {
             </div>
         </div>
     </body>
+
 </html>

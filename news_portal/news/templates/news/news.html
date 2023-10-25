@@ -27,7 +27,8 @@
         {% for post in news %}
         <col>
             <td>{{ post.post_author}}</td>
-            <td>{{ post.post_title }}</td>
+
+            <td><a href="{% url 'post_detail' pk=post.id %}">{{ post.post_title }}</a></td>
             <td>{{ post.category_type }}</td>
             <td>
                     {% for cat in post.post_category.all %}
@@ -35,7 +36,9 @@
                     {% endfor %}
             </td>
             <td>{{ post.post_date|date:'d M Y'}}</td>
+
             <td>{{ post.post_text|truncatewords:3}}</td>
+
             <td>
                 {% if request.user.is_authenticated %}
                     {% if post.category_type == 'NW' %}

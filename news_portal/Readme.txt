@@ -1031,7 +1031,7 @@ urlpatterns = [
 подозрительном сайте, поэтому использовал старый который применял при прохождении
 модуля. И всё заработало!
 ------------
-2. Регистрируем приложение в Yndex для работы с сервисом
+2. Регистрируем приложение в Yandex для работы с сервисом
     • Преходим https://oauth.yandex.com/client/new и заполняем обязательные поля
         • General
             • Service name - SkillFactoryTest
@@ -1044,8 +1044,9 @@ urlpatterns = [
                      http://127.0.0.1:8000/accounts/yandex/login/callback
         • Data access
             To add a permission, enter its name
-                Permission name # поле для выбора по каким полям проходит регисрация
-                Access to email address # у нас заявлено что по emaill
+                Permission name # поле для выбора по каким полям проходит
+                регистрация
+                Access to email address # у нас заявлено что по email
                 login:email
                 - # и по username
                 Access to username, first name and surname, gender
@@ -1059,7 +1060,7 @@ Home › Social Accounts › Social applications › Add social application
 
  Provider: Yandex
     Name: любое имя например Yandex
-    Client id: ID с страницы приложения Yndex. Поле: "ClientID"
+    Client id: ID с страницы приложения Yandex. Поле: "ClientID"
     Seret key: Password с страницы приложения Yandex. Поле: "Client secret"
     Sites переносим единственный сайт в Chosen sites
 ---------------
@@ -1282,7 +1283,7 @@ templates/news/post_email.html
 pip install django-apscheduler
 ------------------
 Зарегистрировал в settings
-django_apschedulerv
+django_apscheduler
 
 Добавил в settings
 
@@ -1298,8 +1299,8 @@ APSCHEDULER_RUN_NOW_TIMEOUT = 25 # продолжительность выпол
 python manage.py makemigrations
 python manage.py migrate
 ---------------
-Тепреь как написанно в документации, создадим свою джанго-команду для
-выполнения переодических задач.
+Теперь как написано в документации, создадим свою Джанго-команду для
+выполнения периодических задач.
     Путь до файла с командой очень важен. Файл должен лежать в одном из наших
 приложений, по пути management/commands.
 А название файла будет идентично тому как мы хотим назвать КОМАНДУ.
@@ -1657,7 +1658,7 @@ def send_email_task(pk):
     msg.attach_alternative(html_content, 'text/html')
     msg.send()
 ---------------
-Преписал фаил signals.py.
+Переписал файл signals.py.
 signals.py
 
 from django.db.models.signals import m2m_changed
@@ -1676,7 +1677,7 @@ def post_created(sender, instance, **kwargs):
 ---------------------------------------
 Реализовал еженедельную рассылку с последними новостями (каждый понедельник в
 8:00 утра).
-Для этого переделал функцию из runapsheuler.py
+Для этого переделал функцию из runapsheduler.py
 ---------------
 
 news/tasks.py
@@ -1739,11 +1740,71 @@ celery -A news_portal worker -l INFO pool=solo
 celery -A news_portal beat -l INFO pool=solo #  c (pool=solo) выдаёт ошибку
     без него всё работает
 ---------------------------------------
+==============================================================================
+D_8                                                                        D_8
+==============================================================================
+Кеширование
+Настройки:
+------------
+Создал папку для кеширования:
+news_portal/cache_files
+------------
+Добавил настройки в
+settings.py
+import os
 
+CACHES = {
+    'default': {
+        'BACKEND':
+            'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+    }
+}
+------------
+Добавьте кэширование на страницы с новостями (по 5 минут на каждую) и на
+главную страницу (одну минуту).
+Изменил в:
+news_portal/news/urls.py
+
+from django.views.decorators.cache import cache_page
+
+
+urlpatterns = [
+    path('', cache_page(60)(PostList.as_view()), name='news'),  # 1m
+    path('<int:pk>', cache_page(60*5)(PostDetail.as_view()),
+         name='post_detail'),  # 5m
+    path('create/', NewsCreate.as_view(), name='news_create'),
+------------
+
+------------
 ---------------------------------------
+В шаблонах постарайтесь кэшировать все навигационные элементы
+(меню, сайдбары и т. д.). Количество кэшируемого времени  600 сек.
+news_portal\news\templates\news\flatpages\default.html
 
+<!DOCTYPE html>
+<html lang="en">
+{% load cache %}
+{% cache 600 header %}
+
+    <head>
+    ........
+    </head>
+{% endcache %}
+........
+</style>
+{% cache 600 body %}
+    <body>
+    ........
+        </nav>
+{% endcache %}
+        <!-- Page content -->
+        ......
+</html>
 ---------------------------------------
-
+Подробнее здесь:
+Django’s cache framework | Django documentation | Django
+https://docs.djangoproject.com/en/3.1/topics/cache/
 ---------------------------------------
 
 ---------------------------------------

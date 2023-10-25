@@ -70,6 +70,8 @@ class Post(models.Model):
         return reverse('post_detail', args=[str(self.id)])
 
 
+
+
 class PostCategory(models.Model):
     post_through = models.ForeignKey(Post, on_delete=models.CASCADE)
     category_through = models.ForeignKey(Category, on_delete=models.CASCADE)
