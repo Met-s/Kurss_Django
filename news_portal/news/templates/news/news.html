@@ -1,12 +1,13 @@
 {% extends 'flatpages/default.html' %}
 {% load censor_filters %}
-
+{% load cache %}
 
 
 {% block title %}
 Все посты
 {% endblock title %}
 
+{% cache 60 content %}
 {% block content %}
 
 <h1>Все статьи</h1>
@@ -79,4 +80,4 @@
 {% endif %}
 
 {% endblock content %}
-
+{% endcache %}

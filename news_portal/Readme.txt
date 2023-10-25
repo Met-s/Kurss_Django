@@ -1768,15 +1768,11 @@ news_portal/news/urls.py
 
 from django.views.decorators.cache import cache_page
 
-
 urlpatterns = [
     path('', cache_page(60)(PostList.as_view()), name='news'),  # 1m
     path('<int:pk>', cache_page(60*5)(PostDetail.as_view()),
          name='post_detail'),  # 5m
     path('create/', NewsCreate.as_view(), name='news_create'),
-------------
-
-------------
 ---------------------------------------
 В шаблонах постарайтесь кэшировать все навигационные элементы
 (меню, сайдбары и т. д.). Количество кэшируемого времени  600 сек.
@@ -1806,7 +1802,45 @@ news_portal\news\templates\news\flatpages\default.html
 Django’s cache framework | Django documentation | Django
 https://docs.djangoproject.com/en/3.1/topics/cache/
 ---------------------------------------
+ПЕРЕДЕЛАЛ!
+------------
+Убрал кеширование из urls.py
+Сделал его в шаблонах:
+news/templates/news/news.html  1 минута
 
+{% extends 'flatpages/default.html' %}
+{% load censor_filters %}
+{% load cache %}
+
+
+{% block title %}
+Все посты
+{% endblock title %}
+
+{% cache 60 content %}
+{% block content %}
+
+<h1>Все статьи</h1>
+.....
+{% endblock content %}
+{% endcache %}
+------------
+news/templates/news/post_detail.html  5 минут
+
+{% extends 'flatpages/default.html' %}
+{% load censor_filters %}
+{% load cache %}
+
+{% block title %}
+    Post
+{% endblock title %}
+
+{% cache 300 content %}
+    {% block content %}
+....
+        <hr>
+    {% endblock content %}
+{% endcache %}
 ---------------------------------------
 
 ---------------------------------------
