@@ -1,8 +1,8 @@
 from django.urls import path
 from .views import (PostList, PostDetail, NewsCreate, ArticleCreate,
                     NewsUpdate, ArticleUpdate, NewsDelete, NewsSearch,
-                     )
-
+                    )
+from django.views.decorators.cache import cache_page
 
 urlpatterns = [
     path('', PostList.as_view(), name='news'),
@@ -13,7 +13,8 @@ urlpatterns = [
     path('articles/<int:pk>/edit/', ArticleUpdate.as_view(),
          name='article_edit'),
     path('<int:pk>/delete/', NewsDelete.as_view(), name='post_delete'),
-    path('articles/<int:pk>/delete/', NewsDelete.as_view(), name='post_delete'),
+    path('articles/<int:pk>/delete/', NewsDelete.as_view(),
+         name='post_delete'),
     path('search/', NewsSearch.as_view(), name='news_search'),
 
 ]

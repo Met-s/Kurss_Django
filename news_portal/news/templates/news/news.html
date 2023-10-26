@@ -1,22 +1,23 @@
+
 {% extends 'flatpages/default.html' %}
-{% load censor_filters %}
 {% load cache %}
+
+{% load censor_filters %}
+
 
 
 {% block title %}
 Все посты
 {% endblock title %}
 
-{% cache 60 content %}
 {% block content %}
-
+{% cache 60 content %}
 <h1>Все статьи</h1>
 {{ news|length }}
 <hr>
 {% if news|length %}
     <table>
         <tr>
-
             <th>Автор</th>
             <th>Название</th>
             <th>Тип</th>
@@ -28,7 +29,6 @@
         {% for post in news %}
         <col>
             <td>{{ post.post_author}}</td>
-
             <td><a href="{% url 'post_detail' pk=post.id %}">{{ post.post_title }}</a></td>
             <td>{{ post.category_type }}</td>
             <td>
@@ -36,10 +36,9 @@
                         {{ cat.category_name }}
                     {% endfor %}
             </td>
-            <td>{{ post.post_date|date:'d M Y'}}</td>
+            <td>{{ post.post_date|date:'d M Y' }}</td>
 
-            <td>{{ post.post_text|truncatewords:3}}</td>
-
+            <td>{{ post.post_text|truncatewords:3 }}</td>
             <td>
                 {% if request.user.is_authenticated %}
                     {% if post.category_type == 'NW' %}
@@ -78,6 +77,6 @@
     <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
     {% endif %}
 {% endif %}
-
-{% endblock content %}
 {% endcache %}
+{% endblock content %}
+

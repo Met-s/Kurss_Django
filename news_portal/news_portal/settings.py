@@ -69,7 +69,7 @@ ROOT_URLCONF = 'news_portal.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'news/templates/news'],
+        'DIRS': [os.path.join(BASE_DIR, 'news/templates/news')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

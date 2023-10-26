@@ -1805,6 +1805,7 @@ https://docs.djangoproject.com/en/3.1/topics/cache/
 ПЕРЕДЕЛАЛ!
 ------------
 Убрал кеширование из urls.py
+
 Сделал его в шаблонах:
 news/templates/news/news.html  1 минута
 
@@ -1817,13 +1818,13 @@ news/templates/news/news.html  1 минута
 Все посты
 {% endblock title %}
 
-{% cache 60 content %}
 {% block content %}
-
+{% cache 60 content %}
 <h1>Все статьи</h1>
 .....
-{% endblock content %}
 {% endcache %}
+{% endblock content %}
+
 ------------
 news/templates/news/post_detail.html  5 минут
 
@@ -1842,10 +1843,72 @@ news/templates/news/post_detail.html  5 минут
     {% endblock content %}
 {% endcache %}
 ---------------------------------------
+Кэширование на низком уровне
+Кеширование для статей.
+Пока статья не изменилась, она должна сохраняться в кэше.
+---------------
+Добавил в news/views.py
+
+from django.core.cache import cache
+
+class PostDetail(DetailView):
+    model = Post
+    template_name = 'post_detail.html'
+    context_object_name = 'post_detail'
+
+queryset = Post.objects.all()
+
+    def get_object(self, *args, **kwargs):
+        obj = cache.get(f'post-{self.kwargs["pk"]}', None)
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'post-{self.kwargs["pk"]}', obj)
+        return obj
+---------------
+news_portal/news/models.py
+
+from django.core.cache import cache
+
+class Post(models.Model):
+    news = 'NW'
+    article = 'AR'
+
+    CATEGORY_CHOICES = [
+        (news, 'Новость'),
+        (article, 'Статья')
+    ]
+    post_author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    category_type = models.CharField(max_length=2, choices=CATEGORY_CHOICES,
+                                     default=article)
+    post_date = models.DateTimeField(auto_now_add=True)
+    post_category = models.ManyToManyField(Category, through='PostCategory')
+    post_title = models.CharField(max_length=128)
+    post_text = models.TextField()
+    post_rating = models.SmallIntegerField(default=0)
+
+   ................ добавил метод сохранения (перезаписи в БД)..........
+    def get_absolute_url(self):
+        return f'/news/{self.pk}'
+        # return reverse('post_detail', args=[str(self.id)])
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.delete(f'post-{self.pk}')
+---------------
+Всё работает.
+Но есть один нюанс:
+С запущенным  Redis - сайт работает быстро
+Без Redis - тормозит при создании статьи
+---------------------------------------
+==============================================================================
+D_9                                                                     D_9
+==============================================================================
 
 ---------------------------------------
+---------------
 
----------------------------------------
+---------------
+
 
 ---------------------------------------
 
