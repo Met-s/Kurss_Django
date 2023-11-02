@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.views.generic.edit import CreateView
-from .forms import CustomSignUpForm
 from django.urls import reverse_lazy
+from .forms import CustomSignUpForm
 
 
 class SignUp(CreateView):

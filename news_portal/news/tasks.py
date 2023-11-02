@@ -1,10 +1,11 @@
+from datetime import datetime, timedelta
 from celery import shared_task
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
-from news.models import Post, Subscriber, PostCategory
 from news_portal import settings
-from datetime import datetime, timedelta
+from news_portal.news.models import Post, Subscriber
+# from news.models import Post, Subscriber
 
 
 @shared_task

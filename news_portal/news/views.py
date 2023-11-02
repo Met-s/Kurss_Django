@@ -1,10 +1,7 @@
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView, )
-from .models import Post, Category, Subscriber, PostCategory
-from .forms import PostForm
-from django.http import HttpResponse
 from django.urls import reverse_lazy
-from .filters import PostFilter
+from django.http import HttpResponse
 from django.contrib.auth.mixins import (
     PermissionRequiredMixin
 )
@@ -13,6 +10,9 @@ from django.db.models import Exists, OuterRef
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 from django.core.cache import cache
+from .filters import PostFilter
+from .models import Post, Category, Subscriber
+from .forms import PostForm
 
 
 class PostList(ListView):
@@ -33,7 +33,7 @@ class PostDetail(DetailView):
     context_object_name = 'post_detail'
     queryset = Post.objects.all()
 
-    def get_object(self, *args, **kwargs):
+    def get_object(self, **kwargs):
         obj = cache.get(f'post-{self.kwargs["pk"]}', None)
         if not obj:
             obj = super().get_object(queryset=self.queryset)
