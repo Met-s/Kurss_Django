@@ -1,4 +1,4 @@
-Установил приложения:
+# Установил приложения:
 pip install django
 django-apscheduler
 pip install celery
