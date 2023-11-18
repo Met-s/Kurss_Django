@@ -1917,7 +1917,10 @@ Flake8 и PyLint
 pip install flake8
 pip install pylint
 ---------------------------------------
-
+Создаёт файл со списком пакетов для последующей установки
+pip freeze > requirments.txt
+Устанавливаем все пакеты из файла
+pip install -r requirments.txt
 ---------------
 
 ---------------

@@ -79,6 +79,9 @@ class PostCategory(models.Model):
     post_through = models.ForeignKey(Post, on_delete=models.CASCADE)
     category_through = models.ForeignKey(Category, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.post_through}'
+
 
 class Comment(models.Model):
     comment_post = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -86,6 +89,11 @@ class Comment(models.Model):
     comment_text = models.TextField()
     comment_date = models.DateTimeField(auto_now_add=True)
     comment_rating = models.SmallIntegerField(default=0)
+
+    def __str__(self):
+        return (f'{self.comment_post} : {self.comment_user} : '
+                f'{self.comment_text} : {self.comment_date} : '
+                f'{self.comment_rating}')
 
     def like(self):
         self.comment_rating += 1
