@@ -1922,7 +1922,10 @@ pip freeze > requirments.txt
 Устанавливаем все пакеты из файла
 pip install -r requirments.txt
 ---------------
-
+Создал файл со списком пакетов для последующей установки
+pip freeze > requirments.txt
+Устанавливает все пакеты из файла
+pip install -r requirments.txt
 ---------------
 
 
