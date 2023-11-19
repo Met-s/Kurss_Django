@@ -22,8 +22,17 @@ class CommentAdmin(admin.ModelAdmin):
     list_filter = ('comment_user', 'comment_date', 'comment_rating')
 
 
-admin.site.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ('author_user', 'author_rating')
+
+
+class SubscriberAdmin(admin.ModelAdmin):
+    list_display = ('user', 'category')
+    list_filter = ('user', 'category__category_name')
+
+
+admin.site.register(Author, AuthorAdmin)
 admin.site.register(Post, PostAdmin)
 admin.site.register(Category)
 admin.site.register(Comment, CommentAdmin)
-admin.site.register(Subscriber)
+admin.site.register(Subscriber, SubscriberAdmin)

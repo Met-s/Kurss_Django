@@ -1929,13 +1929,51 @@ pip install -r requirments.txt
 ---------------------------------------
 D_11                                                                     D_11
 ==============================================================================
-Настроил ид админки  файле admin.py
+Настроил вид админки  файле admin.py
+отображает перечисленные поля в админ панели
+list_display = ('comment_post', 'comment_user', 'comment_text',
+                    'comment_date', 'comment_rating')
+Выводит все имеющиеся поля и ID
+list_display = [field.name for field in Post._meta.get_fields()]
+
+Фильтр по перечисленным полям
+list_filter = ('comment_user', 'comment_date', 'comment_rating')
+
+def category(self, post):
+    """
+    Метод выводит категорию поста, при связи ManyToMany
+    """
+    return ', '.join([_.category_name for _ in post.post_category.all()])
 ---------------
-
-
-
+Добавил команду удаления постов по выбранной категории.
+deleting_articles.py
+Запускается:
+python manage.py deleting_articles <название категории>
+python manage.py <имя файла с командой> <название категории>
 ---------------------------------------
+Работа с БД
 
+Создаёт копию БД в формате json и xml
+Базовые команды:
+python manage.py dumpdata --format=json > mydata.json
+python manage.py dumpdata --format=xml > mydata.xml
+ЕСЛИ в БД есть названия написанные на кириллице, то базовые комманды могут не
+сработать тогда нужно использовать эти:
+python -Xutf8 manage.py dumpdata --format=json --output mydata.json
+python -Xutf8 manage.py dumpdata --format=xml --output mydata.xml
+Загружаем в БД
+python manage.py loaddata mydata.json
+python manage.py loaddata mydata.xml
+
+Если всё хорошо получим:
+Installed 286 object(s) from 1 fixture(s)
+
+(Постарайтесь,
+чтобы в ваших объектах не было полей с русскими буквами, иначе можно жёстко
+застрять с кодировкой).
+---------------------------------------
+D_12                                                                      D_12
+==============================================================================
 
 ---------------
 ---------------------------------------

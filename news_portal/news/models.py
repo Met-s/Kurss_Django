@@ -5,10 +5,18 @@ from django.core.cache import cache
 
 
 class Author(models.Model):
+    """
+    Модель Author имя и рейтинг авторов:
+    author_user (имя автора)
+    author_rating (рейтинг автора)
+    """
     author_user = models.OneToOneField(User, on_delete=models.CASCADE)
     author_rating = models.SmallIntegerField(default=0)
 
     def update_rating(self):
+        """
+        Считает рейтинг автора (суммирует рейтинги постов и комментов)
+        """
         post_rat = self.post_set.aggregate(postrating=Sum('post_rating'))
         prat = 0
         prat += post_rat.get('postrating')
@@ -22,10 +30,14 @@ class Author(models.Model):
         self.save()
 
     def __str__(self):
-        return f'{self.author_user.username}'
+        return f'{self.author_user.username} : {self.author_rating}'
 
 
 class Category(models.Model):
+    """
+    Модель Category список всех категорий:
+    category_name(имя категории  max_length=64)
+    """
     category_name = models.CharField(max_length=64, unique=True)
     subscribers = models.ManyToManyField(User, related_name='categories',
                                          default='')
@@ -35,6 +47,16 @@ class Category(models.Model):
 
 
 class Post(models.Model):
+    """
+    Модель Post статьи:
+    post_author(имя автора написавшего статью),
+    category_type(тип статьи NW,AR),
+    post_date(дата написания статьи),
+    post_category(категория статьи связь ManyToMany с моделью Category),
+    post_title(заголовок статьи, 128 символов),
+    post_rating(рейтинг статьи),
+    preview(метод краткое содержание статьи max_length=128)
+    """
     news = 'NW'
     article = 'AR'
 
@@ -76,6 +98,11 @@ class Post(models.Model):
 
 
 class PostCategory(models.Model):
+    """
+    Промежуточная Модель категорий стаей:
+    post_through(связь с моделью Post),
+    category_through(связь с моделью Category)
+    """
     post_through = models.ForeignKey(Post, on_delete=models.CASCADE)
     category_through = models.ForeignKey(Category, on_delete=models.CASCADE)
 
@@ -84,6 +111,14 @@ class PostCategory(models.Model):
 
 
 class Comment(models.Model):
+    """
+    Модель Comment комментарии к статье:
+    comment_post(текст статьи на которую написали комментарий),
+    comment_user(имя пользователя написавшего комментарий),
+    comment_text(текст комментария),
+    comment_date(дата когда был написан комментарий),
+    comment_rating(рейтинг комментария).
+    """
     comment_post = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment_user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment_text = models.TextField()
@@ -105,6 +140,12 @@ class Comment(models.Model):
 
 
 class Subscriber(models.Model):
+    """
+    Модель Subscriber промежуточная модель Подписчики:
+    user(связь с моделью User имя пользователя(подписчика))
+    category(связь с моделью Category, категория на которую подписан
+    пользователь)
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='user_sub')
     category = models.ForeignKey(Category,
