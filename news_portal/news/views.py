@@ -14,6 +14,10 @@ from .filters import PostFilter
 from .models import Post, Category, Subscriber
 from .forms import PostForm
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class PostList(ListView):
     model = Post

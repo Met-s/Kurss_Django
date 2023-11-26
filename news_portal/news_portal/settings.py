@@ -188,3 +188,34 @@ CACHES = {
         'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
     }
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loger': False,
+    'loggers': {
+        'django': {
+            'handlers': ["news2"],
+
+        }
+    },
+    'handlers': {
+        'news2': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'general.log',
+            'formatter': 'myformatter2'
+        }
+    },
+    'formatters': {
+        'myformatter2': {
+            'format': '{asctime} : {levelname} : {module} : {message}',
+            'datefmt': "%H:%M:%S",
+            'style': '{'
+        }
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': "django.utils.log.RequireDebugFalse",
+        }
+    },
+}
