@@ -193,29 +193,43 @@ LOGGING = {
     'version': 1,
     'disable_existing_loger': False,
     'loggers': {
-        'django': {
-            'handlers': ["news2"],
 
-        }
     },
     'handlers': {
-        'news2': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': 'general.log',
-            'formatter': 'myformatter2'
-        }
+
     },
     'formatters': {
-        'myformatter2': {
+        'formatDebug': {
+            'format': '{asctime} : {levelname} : {message}',
+            'datefmt': "%H:%M:%S",
+            'style': '{'
+        },
+        'formatWarning': {
+            'format': '{asctime} : {levelname} : {message} : {pathname}',
+            'datefmt': "%H:%M:%S",
+            'style': '{'
+        },
+        'formatErrorCritical': {
+            'format': '{asctime} : {levelname} : {message} : {pathname} : '
+                      '{exc_info}',
+            'datefmt': "%H:%M:%S",
+            'style': '{'
+        },
+        'format2': {
             'format': '{asctime} : {levelname} : {module} : {message}',
             'datefmt': "%H:%M:%S",
             'style': '{'
-        }
+        },
+
+
+
     },
     'filters': {
         'require_debug_false': {
             '()': "django.utils.log.RequireDebugFalse",
+        },
+        'require_debug_true': {
+            '()': "django.utils.log.RequireDebugTrue",
         }
     },
 }
