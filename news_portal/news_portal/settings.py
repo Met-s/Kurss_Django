@@ -194,23 +194,25 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'formatDebug': {
-            'format': '{asctime} : {levelname} : {message}',
+            'format': 'formatDebug {asctime} : {levelname} : {message}',
             'datefmt': "%H:%M:%S",
             'style': '{'
         },
         'formatWarning': {
-            'format': '{asctime} : {levelname} : {message} : {pathname}',
+            'format': 'formatWarning {asctime} : {levelname} : {message} : {pathname}',
             'datefmt': "%H:%M:%S",
             'style': '{'
         },
         'formatErrorCritical': {
-            'format': '{asctime} : {levelname} : {message} : {pathname} : '
+            'format': 'formatErrorCritical {asctime} : {levelname} : {'
+                      'message} : {pathname} : '
                       '{exc_info}',
             'datefmt': "%H:%M:%S",
             'style': '{'
         },
         'format2': {
-            'format': '{asctime} : {levelname} : {module} : {message}',
+            'format': 'format2 {asctime} : {levelname} : {module} : {'
+                      'message}',
             'datefmt': "%H:%M:%S",
             'style': '{'
         },
@@ -234,18 +236,61 @@ LOGGING = {
             'level': 'WARNING',
             'class': 'logging.StreamHandler',
             'formatter': 'formatWarning',
+            'filters': ['require_debug_true'],
         },
         'consoleERCR': {
             'level': 'ERROR',
             'class': 'logging.StreamHandler',
             'formatter': 'formatErrorCritical',
+            'filters': ['require_debug_true'],
+        },
+        'general': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'general.log',
+            'formatter': 'format2',
+            'filters': ['require_debug_false'],
+        },
+        'errors': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatter': 'formatErrorCritical',
+        },
+        'security': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatter': 'format2',
+        },
+        'email': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'formatWarning',
+            'filters': ['require_debug_false'],
         }
     },
 
     'loggers': {
         'django': {
             'level': 'DEBUG',
-            'handlers': ['consoleD', 'consoleW', 'consoleERCR']
+            'handlers': ['consoleD', 'consoleW', 'consoleERCR', 'general'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['errors', 'email'],
+        },
+        'django.server': {
+            'handlers': ['errors', 'email'],
+        },
+        'django.template': {
+            'handlers': ['errors'],
+        },
+        'django.db.backends': {
+            'handlers': ['errors'],
+        },
+        'django.security': {
+            'handlers': ['security'],
         }
     },
 
