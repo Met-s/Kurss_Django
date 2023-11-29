@@ -191,13 +191,7 @@ CACHES = {
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loger': False,
-    'loggers': {
-
-    },
-    'handlers': {
-
-    },
+    'disable_existing_loggers': False,
     'formatters': {
         'formatDebug': {
             'format': '{asctime} : {levelname} : {message}',
@@ -220,9 +214,6 @@ LOGGING = {
             'datefmt': "%H:%M:%S",
             'style': '{'
         },
-
-
-
     },
     'filters': {
         'require_debug_false': {
@@ -232,4 +223,31 @@ LOGGING = {
             '()': "django.utils.log.RequireDebugTrue",
         }
     },
+    'handlers': {
+        'consoleD': {
+            "level": "DEBUG",
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'formatDebug',
+        },
+        'consoleW': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'formatWarning',
+        },
+        'consoleERCR': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'formatErrorCritical',
+        }
+    },
+
+    'loggers': {
+        'django': {
+            'level': 'DEBUG',
+            'handlers': ['consoleD', 'consoleW', 'consoleERCR']
+        }
+    },
+
+
 }
