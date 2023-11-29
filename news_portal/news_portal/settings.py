@@ -252,7 +252,7 @@ LOGGING = {
             'filters': ['require_debug_false'],
         },
         'errors': {
-            'level': 'ERROR',
+            'level': 'ERROR', 'CRITICAL'
             'class': 'logging.FileHandler',
             'filename': 'errors.log',
             'formatter': 'formatErrorCritical',
@@ -279,20 +279,23 @@ LOGGING = {
         },
         'django.request': {
             'handlers': ['errors', 'email'],
+            'propagate': True,
         },
         'django.server': {
             'handlers': ['errors', 'email'],
+            'propagate': True,
         },
         'django.template': {
             'handlers': ['errors'],
+            'propagate': True,
         },
         'django.db.backends': {
             'handlers': ['errors'],
+            'propagate': True,
         },
         'django.security': {
             'handlers': ['security'],
+            'propagate': True,
         }
     },
-
-
 }

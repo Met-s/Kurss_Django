@@ -1,12 +1,4 @@
-format2 17:03:17 : INFO : autoreload : Watching for file changes with StatReloader
-format2 17:03:48 : INFO : basehttp : "GET /news/ HTTP/1.1" 200 5156
-format2 17:11:12 : INFO : autoreload : C:\Users\feron\Kurss_Django\news_portal\news_portal\settings.py changed, reloading.
-format2 17:20:34 : INFO : autoreload : Watching for file changes with StatReloader
-format2 17:21:45 : INFO : autoreload : C:\Users\feron\Kurss_Django\news_portal\news_portal\settings.py changed, reloading.
-format2 17:24:53 : INFO : autoreload : Watching for file changes with StatReloader
-format2 17:25:29 : INFO : autoreload : C:\Users\feron\Kurss_Django\news_portal\news_portal\settings.py changed, reloading.
-format2 17:25:38 : INFO : autoreload : Watching for file changes with StatReloader
-format2 17:26:02 : INFO : basehttp : "GET /news/ HTTP/1.1" 200 5156
-format2 17:26:02 : INFO : basehttp : "GET /news/ HTTP/1.1" 200 5156
-format2 17:26:09 : INFO : basehttp : "GET /news/ HTTP/1.1" 200 5156
-format2 17:26:27 : INFO : basehttp : "GET /news/ HTTP/1.1" 200 5156
+format2 18:03:41 : INFO : autoreload : C:\Users\feron\Kurss_Django\news_portal\news_portal\settings.py changed, reloading.
+format2 18:03:43 : INFO : autoreload : Watching for file changes with StatReloader
+format2 18:03:47 : WARNING : log : Not Found: /
+format2 18:04:09 : WARNING : log : Not Found: /
