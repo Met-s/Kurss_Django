@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class PostList(ListView):
+    logger.info('INFO')
     model = Post
     ordering = '-post_date'
     template_name = 'news.html'

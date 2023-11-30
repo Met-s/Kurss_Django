@@ -1,0 +1,32 @@
+14:51:31 : ERROR : Internal Server Error: /news/ : C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\utils\log.py : (<class 'django.template.exceptions.TemplateDoesNotExist'>, TemplateDoesNotExist('newrs.html, news/post_list.html'), <traceback object at 0x000002B0F90A72C0>)
+Traceback (most recent call last):
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\template\response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\template\response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\template\loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: newrs.html, news/post_list.html
+14:51:31 : ERROR : "GET /news/ HTTP/1.1" 500 96576 : C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\core\servers\basehttp.py : None
+14:53:14 : ERROR : Internal Server Error: /news/ : C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\utils\log.py : (<class 'django.template.exceptions.TemplateDoesNotExist'>, TemplateDoesNotExist('newrs.html, news/post_list.html'), <traceback object at 0x000002B0F90C2800>)
+Traceback (most recent call last):
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\template\response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\template\response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\template\loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: newrs.html, news/post_list.html
+14:53:14 : ERROR : "GET /news/ HTTP/1.1" 500 96576 : C:\Users\feron\Kurss_Django\venv\lib\site-packages\django\core\servers\basehttp.py : None

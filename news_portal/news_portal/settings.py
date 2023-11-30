@@ -16,7 +16,6 @@ from news_portal.config import email_host_password
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -27,8 +26,7 @@ SECRET_KEY = ('django-insecure-g7+qz8b5lp)&)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
@@ -85,7 +83,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'news_portal.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -95,7 +92,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -119,7 +115,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -130,7 +125,6 @@ TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -171,8 +165,11 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = "si-mart@yandex.ru"
 
+SERVER_EMAIL = "si-mart@yandex.ru"
 APSCHEDULER_DATETIME_FORMAT = 'N j, Y, f:s a'
 APSCHEDULER_RUN_NOW_TIMEOUT = 25
+
+ADMINS = [("AdminSi", "si-mart@yandex.ru")]
 
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
@@ -194,25 +191,23 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'formatDebug': {
-            'format': 'formatDebug {asctime} : {levelname} : {message}',
+            'format': '{asctime} : {levelname} : {message}',
             'datefmt': "%H:%M:%S",
             'style': '{'
         },
         'formatWarning': {
-            'format': 'formatWarning {asctime} : {levelname} : {message} : {pathname}',
+            'format': '{asctime} : {levelname} : {message} : {pathname}',
             'datefmt': "%H:%M:%S",
             'style': '{'
         },
         'formatErrorCritical': {
-            'format': 'formatErrorCritical {asctime} : {levelname} : {'
-                      'message} : {pathname} : '
+            'format': '{asctime} : {levelname} : {message} : {pathname} : '
                       '{exc_info}',
             'datefmt': "%H:%M:%S",
             'style': '{'
         },
         'format2': {
-            'format': 'format2 {asctime} : {levelname} : {module} : {'
-                      'message}',
+            'format': '{asctime} : {levelname} : {module} : {message}',
             'datefmt': "%H:%M:%S",
             'style': '{'
         },
@@ -228,9 +223,9 @@ LOGGING = {
     'handlers': {
         'consoleD': {
             "level": "DEBUG",
-            'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'formatDebug',
+            'filters': ['require_debug_true'],
         },
         'consoleW': {
             'level': 'WARNING',
@@ -252,7 +247,7 @@ LOGGING = {
             'filters': ['require_debug_false'],
         },
         'errors': {
-            'level': 'ERROR', 'CRITICAL'
+            'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filename': 'errors.log',
             'formatter': 'formatErrorCritical',
@@ -268,9 +263,8 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'formatter': 'formatWarning',
             'filters': ['require_debug_false'],
-        }
+        },
     },
-
     'loggers': {
         'django': {
             'level': 'DEBUG',
