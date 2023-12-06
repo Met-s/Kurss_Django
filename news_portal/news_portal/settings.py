@@ -222,7 +222,7 @@ LOGGING = {
     },
     'handlers': {
         'consoleD': {
-            "level": "DEBUG",
+            "level": "INFO",
             'class': 'logging.StreamHandler',
             'formatter': 'formatDebug',
             'filters': ['require_debug_true'],
@@ -267,16 +267,16 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'level': 'DEBUG',
+            'level': 'iNFO',
             'handlers': ['consoleD', 'consoleW', 'consoleERCR', 'general'],
             'propagate': True,
         },
         'django.request': {
-            'handlers': ['errors', 'email'],
+            'handlers': ['errors'],
             'propagate': True,
         },
         'django.server': {
-            'handlers': ['errors', 'email'],
+            'handlers': ['errors'],
             'propagate': True,
         },
         'django.template': {
