@@ -1,5 +1,6 @@
 
 {% extends 'flatpages/default.html' %}
+
 {% load cache %}
 
 {% load censor_filters %}
@@ -11,7 +12,7 @@
 {% endblock title %}
 
 {% block content %}
-{% cache 60 content %}
+{% cache 1 content %}
 <h1>Все статьи</h1>
 {{ news|length }}
 <hr>

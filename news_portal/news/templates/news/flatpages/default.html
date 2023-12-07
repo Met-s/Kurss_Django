@@ -1,7 +1,8 @@
 <!DOCTYPE html>
+{% load i18n %}
 <html lang="en">
 {% load cache %}
-{% cache 600 head %}
+{% cache 1 head %}
 
     <head>
         <meta charset="utf-8" />
@@ -32,8 +33,9 @@ table {
    width: 100%;
 }
 </style>
-{% cache 600 body %}
+{% cache 1 body %}
     <body>
+
         <!-- Responsive navbar-->
        <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
             <div class="container">
@@ -80,6 +82,23 @@ table {
             </div>
         </nav>
 {% endcache %}
+
+<form action="{% url 'set_language' %}" method="POST"> {% csrf_token %}
+        <input type="hidden" name="next" value="{{ redirect_to }}">
+            {% get_current_language as LANGUAGE_CODE %}
+            <select name="language" id="">
+                {% get_available_languages as LANGUAGES %}
+                {% get_language_info_list for LANGUAGES as languages %}
+                {% for language in languages %}
+                    <option value="{{ language.code }}"
+                            {% if language.code == LANGUAGE_CODE %} selected
+                            {% endif %}>
+                            {{ language.name_local }} - {{ language.code }}
+                    </option>
+                {% endfor %}
+            </select>
+        <input type="submit" value="ok">
+    </form>
         <!-- Page content -->
         <div class="container">
             <div class="row">

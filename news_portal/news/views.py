@@ -13,8 +13,11 @@ from django.core.cache import cache
 from .filters import PostFilter
 from .models import Post, Category, Subscriber
 from .forms import PostForm
-
 import logging
+from django.utils.translation import gettext as _
+from django.utils.translation import pgettext_lazy
+from django.views import View
+
 
 logger = logging.getLogger(__name__)
 
@@ -167,3 +170,13 @@ def subscriptions(request):
         'subscriptions.html',
         {'categories': categories_with_subscriptions}
     )
+
+
+class Index(View):
+    def get(self, request):
+        models = Post.objects.all()
+        context = {'models': models}
+        # string = _('Hello World')
+        # context = {'string': string}
+        return HttpResponse(render(request,
+                                   'translation.html', context))
