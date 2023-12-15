@@ -50,10 +50,7 @@ table {
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
-
-
-
-    <ul class="navbar-nav ml-auto">
+   <ul class="navbar-nav ml-auto">
         <li class="nav-item active">
             <a class="nav-link" href="/admin/">{% translate "Admin" %}
                 <span class="sr-only"></span>
@@ -107,25 +104,8 @@ table {
         </nav>
 {% endcache %}
                  <style>
-                        body {background-color: {% if current_time.hour >= 19 or current_time.hour <= 7 %} #eac387 {% else %} #fdffff {% endif %};}
+                        body {background-color: {% if current_time.hour >= 19 or current_time.hour <= 7 %} #ddea87 {% else %} #fdffff {% endif %};}
                  </style>
-                             {% get_current_timezone as TIME_ZONE %}
-                                            <form action="" method="POST">
-                                                {% csrf_token %}
-                                                <label for="timezone">Time zone:</label>
-                                                <select name="timezone">
-                                                    {% for tz in timezones %}
-                                                    <option value="{{ tz }}" {% if tz == TIME_ZONE %}selected
-                                                    {% endif %}>{{ tz }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                                <input type="submit"
-                                                       value="ok">
-                                            </form>
-                                             {{ TIME_ZONE }}
-                                             {{ current_time|timezone:TIME_ZONE }}
-
-
         <!-- Page content -->
         <div class="container">
             <div class="row">

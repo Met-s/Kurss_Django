@@ -31,4 +31,12 @@ python manage.py loaddata mydata.xml
 pip freeze > requirments.txt
 Устанавливаем все пакеты из файла
 pip install -r requirments.txt
+-------------Команды для перевода D_14--------------
+Создаёт файл перевода
+python manage.py makemessages -l ru
+Создаёт компилированный файл
+django-admin compilemessages -l ru
+Запуск сервера
+py manage.py runserver
+python manage.py update_translation_fields
 -------------

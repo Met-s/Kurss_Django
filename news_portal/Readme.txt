@@ -2021,8 +2021,265 @@ ADMINS = [("AdminSi", "si-mart@yandex.ru")]
 Логирование подробнее здесь:
 https://docs.djangoproject.com/en/4.2/topics/logging/#logging-security-implications
 ---------------------------------------
-D_14
+D_14 Локализация и интернационализация
+---------------Перевод-----
+В settings.py должна быть строчка
+USE_I18N = True
+-------------
+Также понадобится установить утилиту для переводов — gettext.
+На Linux пишем в терминале:                                            Linux
+
+sudo apt-get install gettext
+-------------Установка на Windows--------
+Скачал :
+gettext0.21-iconv1.16-shared-64.exe
+gettext0.21-iconv1.16-static-64.exe
+от сюда:
+gettext 0.21 and iconv 1.16 - Binaries for Windows | mlocati - Michele Locati
+https://mlocati.github.io/articles/gettext-iconv-windows.html
+Установил по очереди, перезапустил PyCharm.
+-------------
+Добавил в:
+settings.py
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale')
+]
+-------------
+MIDDLEWARE = [
+'django.middleware.security.SecurityMiddleware',
+'django.contrib.sessions.middleware.SessionMiddleware',
+
+'django.middleware.locale.LocaleMiddleware', # добавил вот эту строку
+-------------
+Создал папку locale в корне проекта Kurss_Django\news_portal\locale
+(название папки должно совпадать с " os.path.join(BASE_DIR, 'locale' ")
+-------------Перевод текста в шаблоне--
+Базовый шаблон изменил
+default.html
+
+{% load i18n %}  # добавил
+
+переписал все названия ссылок с руссого на английский, добавил тег для
+перевода:
+
+<a class="nav-link" href="/accounts/login/">{% translate "Login/Registration" %}
+
+Образец:
+{% translate "<Текст, который нужно перевести>" <дополнительные аргументы>%}
+
+Добавил форму в базовый шаблон для выбора языка
+
+<form action="{% url 'set_language' %}" method="POST"> {% csrf_token %}
+                <input type="hidden" name="next" value="{{ redirect_to }}">
+                {% get_current_language as LANGUAGE_CODE %}
+                     <select name="language" id="">
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        {% for language in languages %}
+                        <option value="{{ language.code }}"
+                            {% if language.code == LANGUAGE_CODE %} selected
+                            {% endif %}>
+                            {{ language.name_local }} - {{ language.code }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                <input type="submit" value="ok">
+            </form>
+-------------
+Для того чтобы создать файл перевода на какой-либо язык, надо ввести следующую
+команду в терминале в папке с manage.py файлом:
+
+python manage.py makemessages -l <код языка*>
+
+python manage.py makemessages -l ru
+
+*код языка — это сокращение от его официального названия на английском,
+например, русский язык — ru, английский — en и т. д.
+-------------
+После ввода команды, создался файл
+locale/ru/LC_MESSAGES/django.po
+В нём и будет находиться перевод,перевёл все поля которые в нём есть.
+msgid: «<оригинальный текст>»
+msgstr: «<текст с переводом на нужный язык>»
+-------------
+После чего нам надо выполнить компиляцию:
+
+python manage.py compilemessages    # так рекомендуют в юните
+django-admin compilemessages -l ru  # так писал в ролике
+-------------
+В settings.py
+добавил языки
+
+LANGUAGES = [
+    ('en-us', 'English'),
+    ('ru', 'Русский'),
+]
+-------------
+ВНИМАНИЕ: если вы не получили перевод на русский, то, скорее всего, у вас
+стоит английский язык в браузере, при перестановке языка на русский всё должно
+заработать.
+---------------------------------------
+Перевод статических текстов
+Подробнее здесь: Translation | Django documentation | Django
+https://docs.djangoproject.com/en/3.1/topics/i18n/translation/
+---------------------------------------
+
+---------------Перевод в моделях--
+pip install django-modeltranslation
+После того как мы его установили, его надо включить в настройках в
+установленных приложениях.
+settings.py
+
+INSTALLED_APPS = [
+    'modeltranslation',  # обязательно впишите его перед админом
+    'django.contrib.admin',
 ---------------
+Теперь нам надо указать нашему приложению, как именно и что именно надо
+переводить, Для этого создадим в папке с приложением файл translation.py
+news_portal/news/translation.py
+
+from .models import Author, Category, Post, Comment, User
+from modeltranslation.translator import register, TranslationOptions
+
+@register(Author)
+class AuthorTranslationOptions(TranslationOptions):
+    fields = ('author_user',)
+
+@register(User)
+class UserTranslationOptions(TranslationOptions):
+    fields = ('Username',)
+
+@register(Category)
+class CategoryTranslationOptions(TranslationOptions):
+    fields = ('category_name',)
+
+@register(Post)
+class PostTranslationOptions(TranslationOptions):
+    fields = ('post_author', 'post_title', 'post_text')
+
+@register(Comment)
+class CommentTranslationOptions(TranslationOptions):
+    fields = ('comment_post', 'comment_user', 'comment_text')
+
+---------------
+Теперь нам надо зарегистрировать наш перевод в админ-панели.
+
+from modeltranslation.admin import TranslationAdmin
+
+class AuthorAdmin(TranslationAdmin):
+    model = Author
+
+class CategoryAdmin(TranslationAdmin):
+    model = Category
+
+class PostAdmin(TranslationAdmin):
+    model = Post
+
+class CommentAdmin(TranslationAdmin):
+    model = Comment
+
+admin.site.register(Author, AuthorAdmin)
+admin.site.register(Post, PostAdmin)
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Comment, CommentAdmin)
+admin.site.register(Subscriber, SubscriberAdmin)
+---------------
+Поскольку у нас уже были записи в базе данных, надо будет ввести команду
+update_translation_fields.
+
+python manage.py update_translation_fields
+---------------
+Запускааем сервер заходим в админ, у нас в моделях появились окна для
+перевода, переводим сохраняем.
+На странице при переключения языка данные из БД будут переводиться.
+-----------------Локализация----------------------
+Подробнее здесь:
+Time zones | Django documentation | Django
+https://docs.djangoproject.com/en/3.1/topics/i18n/timezones/
+---------------
+Сперва создадим middleware для обработки часовых поясов.
+news_portal/news/middlewares.py
+
+import pytz
+from django.utils import timezone
+
+class TimezoneMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        tzname = request.session.get('django_timezone')
+        if tzname:
+            timezone.activate(pytz.timezone(tzname))
+        else:
+            timezone.deactivate()
+        return self.get_response(request)
+---------------
+Не забываем подключить его в настройках.
+
+MIDDLEWARE = [
+.....
+    'allauth.account.middleware.AccountMiddleware',
+    'simpleapp.middlewares.TimezoneMiddleware', # add that middleware!
+    ]
+---------------
+Изменил представление
+views.py
+
+from django.utils import timezone
+import pytz
+
+class PostList(ListView):
+   ....
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_time'] = timezone.localtime(timezone.now())
+        context['timezones'] = pytz.common_timezones
+        return context
+
+    def set_timezone(self, request):
+        if request.method == 'POST':
+            request.session['django_timezone'] = request.POST['timezone']
+            return redirect('news')
+        else:
+            return render(request, 'news.html',
+                          {'timezones': pytz.common_timezones})
+
+    def post(self, request):
+        request.session['django_timezone'] = request.POST.get('timezone',
+                                                              None)
+        return redirect('news')
+---------------
+Добавил форму в шаблон
+news.html
+
+{% load tz %}
+
+ {% get_current_timezone as TIME_ZONE %}
+        <form action="" method="POST">
+            {% csrf_token %}
+            <label for="timezone">Time zone:</label>
+            <select name="timezone">
+                {% for tz in timezones %}
+                <option value="{{ tz }}" {% if tz == TIME_ZONE %}selected
+                {% endif %}>{{ tz }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit"
+                   value="ok">
+        </form>
+     {{ TIME_ZONE }}
+     {{ current_time|timezone:TIME_ZONE }}
+--------------- Ночная Дневная тема--
+Основной шаблон default.html
+
+<style>
+   body {background-color: {% if current_time.hour >= 19 or current_time.hour <= 7 %} #ddea87 {% else %} #fdffff {% endif %};}
+</style>
+---------------
+
+---------------------------------------
 
 ---------------------------------------
 
