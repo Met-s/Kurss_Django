@@ -1,3 +1,27 @@
+import pytz
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.cache import cache
+from django.db.models import Exists, OuterRef
+from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.views import View
+from django.views.decorators.csrf import csrf_protect
+from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
+from django_filters.rest_framework import DjangoFilterBackend
+# from rest_framework import viewsets
+
+# from NewsPortal.settings import logger
+# from . import serializers
+# from .filters import NewsFilter
+# from .forms import NewsForm
+
+
+
+
+
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView, )
 from django.urls import reverse_lazy
@@ -7,16 +31,22 @@ from django.contrib.auth.mixins import (
 )
 from django.contrib.auth.decorators import login_required
 from django.db.models import Exists, OuterRef
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 from django.core.cache import cache
 from .filters import PostFilter
 from .models import Post, Category, Subscriber
 from .forms import PostForm
 import logging
-from django.utils.translation import gettext as _
-from django.utils.translation import pgettext_lazy
+# from django.utils.translation import gettext as _
+# from django.utils.translation import pgettext_lazy
+# # from django.utils.translation import (activate,
+#                                       get_supported_language_variant,
+#                                       LANGUAGE_SESSION_KEY)
 from django.views import View
+from django.utils import timezone
+# from django.shortcuts import redirect
+import pytz
 
 
 logger = logging.getLogger(__name__)
@@ -34,6 +64,16 @@ class PostList(ListView):
         context = super().get_context_data(**kwargs)
         return context
 
+    from django.shortcuts import redirect, render
+
+    def set_timezone(request):
+        if request.method == 'POST':
+            request.session['django_timezone'] = request.POST['timezone']
+            return redirect('news')
+        else:
+            return render(request, 'news.html',
+                          {'timezones': pytz.common_timezones})
+
 
 class PostDetail(DetailView):
     model = Post
@@ -50,6 +90,10 @@ class PostDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        context['current_time'] = timezone.localtime(timezone.now())
+        context['timezones'] = pytz.common_timezones
+
         return context
 
 
@@ -174,9 +218,16 @@ def subscriptions(request):
 
 class Index(View):
     def get(self, request):
-        models = Post.objects.all()
-        context = {'models': models}
+        models = Post
+        context = {'models': models,
+                    'current_time': timezone.localtime(timezone.now()),
+                    'timezones': pytz.common_timezones
+                    }
         # string = _('Hello World')
         # context = {'string': string}
         return HttpResponse(render(request,
-                                   'translation.html', context))
+                                   'news.html', context))
+
+    def post(self, request):
+        request.session['django_timezone'] = request.POST['timezone']
+        return redirect('index')

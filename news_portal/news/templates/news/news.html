@@ -1,31 +1,29 @@
-
 {% extends 'flatpages/default.html' %}
-
+{% load i18n %}
+{% load tz %}
 {% load cache %}
-
 {% load censor_filters %}
 
-
-
 {% block title %}
-Все посты
+{% translate "All posts" %}
 {% endblock title %}
 
 {% block content %}
 {% cache 1 content %}
-<h1>Все статьи</h1>
+
+<h1>{% translate "All articles" %}</h1>
 {{ news|length }}
 <hr>
 {% if news|length %}
     <table>
         <tr>
-            <th>Автор</th>
-            <th>Название</th>
-            <th>Тип</th>
-            <th>Категория</th>
-            <th>Дата</th>
-            <th>Содержание</th>
-            <th>Действие</th>
+            <th>{% translate "Author" %}</th>
+            <th>{% translate "Name" %}</th>
+            <th>{% translate "Type" %}</th>
+            <th>{% translate "Category" %}</th>
+            <th>{% translate "Date" %}</th>
+            <th>{% translate "Content" %}</th>
+            <th>{% translate "Action" %}</th>
         </tr>
         {% for post in news %}
         <col>
@@ -58,7 +56,7 @@
             <hr>
 
         {% else %}
-            <h1>Извините на данный момент статей нет</h1>
+            <h1>{% translate "Sorry, there are no articles at the moment" %}</h1>
 {% endif %}
 
 {% if page_obj.has_previous %}
@@ -80,4 +78,3 @@
 {% endif %}
 {% endcache %}
 {% endblock content %}
-

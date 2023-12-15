@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'news.middlewares.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'news_portal.urls'
@@ -132,6 +133,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
 # ----------------
 LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
 

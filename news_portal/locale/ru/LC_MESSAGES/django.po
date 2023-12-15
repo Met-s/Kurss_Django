@@ -1,0 +1,92 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-15 12:13+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+#: .\news\templates\news\flatpages\default.html:58
+msgid "Admin"
+msgstr "Админ"
+
+#: .\news\templates\news\flatpages\default.html:63
+msgid "Login/Registration"
+msgstr "Вход/Регистрация"
+
+#: .\news\templates\news\flatpages\default.html:68
+msgid "Articles"
+msgstr "Статьи"
+
+#: .\news\templates\news\flatpages\default.html:72
+msgid "Write News"
+msgstr "Написать Новость"
+
+#: .\news\templates\news\flatpages\default.html:76
+msgid "Write Articles"
+msgstr "Написать Статью"
+
+#: .\news\templates\news\flatpages\default.html:80
+msgid "Search"
+msgstr "Поиск"
+
+#: .\news\templates\news\flatpages\default.html:84
+msgid "Subscribe to categories"
+msgstr "Подписаться на категории"
+
+#: .\news\templates\news\news.html:8
+msgid "All posts"
+msgstr "Все посты"
+
+#: .\news\templates\news\news.html:14
+msgid "All articles"
+msgstr "Все статьи"
+
+#: .\news\templates\news\news.html:20
+msgid "Author"
+msgstr "Автор"
+
+#: .\news\templates\news\news.html:21
+msgid "Name"
+msgstr "Название"
+
+#: .\news\templates\news\news.html:22
+msgid "Type"
+msgstr "Тип"
+
+#: .\news\templates\news\news.html:23
+msgid "Category"
+msgstr "Категория"
+
+#: .\news\templates\news\news.html:24
+msgid "Date"
+msgstr "Дата"
+
+#: .\news\templates\news\news.html:25
+msgid "Content"
+msgstr "Содержание"
+
+#: .\news\templates\news\news.html:26
+msgid "Action"
+msgstr "Действие"
+
+#: .\news\templates\news\news.html:59
+msgid "Sorry, there are no articles at the moment"
+msgstr "Извините на данный момент статей нет"
+
+#: .\news\templates\news\post_detail.html:12
+msgid "One article"
+msgstr "Одна статья"
